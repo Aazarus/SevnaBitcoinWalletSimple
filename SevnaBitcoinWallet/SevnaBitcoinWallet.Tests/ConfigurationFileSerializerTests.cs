@@ -9,7 +9,6 @@ namespace SevnaBitcoinWallet.Tests
   using FluentAssertions;
   using NBitcoin;
   using Xunit;
-  using Xunit.Abstractions;
 
   /// <summary>
   /// Tests the ConfigurationFileSerializer class.
@@ -23,14 +22,15 @@ namespace SevnaBitcoinWallet.Tests
     public void Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent()
     {
       // Arrange
-      var currentDirectory = Environment.CurrentDirectory;
+      const string fileName = "Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent.json";
+      var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
 
-      if (File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}"))
+      if (File.Exists(filePath))
       {
-        File.Delete($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}");
+        File.Delete(filePath);
       }
 
-      File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}").Should().BeFalse();
+      File.Exists(filePath).Should().BeFalse();
 
       const string walletFileName = "TestWallet.json";
       var testNetwork = Network.Main;
@@ -43,14 +43,15 @@ namespace SevnaBitcoinWallet.Tests
         walletFileName,
         testNetwork.ToString(),
         testConnectionType.ToString(),
-        testCanSpendUnconfirmed.ToString());
+        testCanSpendUnconfirmed.ToString(),
+        filePath);
 
       // Assert
-      File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}").Should().BeTrue();
-      File.ReadAllText($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}").Should().Be(expectedFileContents);
+      File.Exists(filePath).Should().BeTrue();
+      File.ReadAllText(filePath).Should().Be(expectedFileContents);
 
       // Clean up
-      File.Delete($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}");
+      File.Delete(filePath);
     }
 
     /// <summary>
@@ -60,22 +61,25 @@ namespace SevnaBitcoinWallet.Tests
     public void Deserialize_ShouldReturnAConfigurationFileSerializerObjectForExistingConfigurationFile()
     {
       // Arrange
+      const string fileName = "Deserialize_ShouldReturn_ForExistingConfigurationFile.json";
+      var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+
       const string walletFileName = "TestWallet.json";
       var testNetwork = Network.Main;
       const ConnectionType testConnectionType = ConnectionType.Http;
       const bool testCanSpendUnconfirmed = false;
       const string expectedFileContents = "{\"WalletFileName\":\"TestWallet.json\",\"Network\":\"Main\",\"ConnectionType\":\"Http\",\"CanSpendUnconfirmed\":\"False\"}";
-      var currentDirectory = Environment.CurrentDirectory;
 
-      if (File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}") == false)
+      if (File.Exists(filePath))
       {
-        File.WriteAllText($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}", expectedFileContents);
+        File.Delete(filePath);
       }
 
-      File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}").Should().BeTrue();
+      File.WriteAllText(filePath, expectedFileContents);
+      File.Exists(filePath).Should().BeTrue();
 
       // Act
-      var result = ConfigurationFileSerializer.Deserialize();
+      var result = ConfigurationFileSerializer.Deserialize(filePath);
 
       // Assert
       result.Should().NotBeNull();
@@ -85,7 +89,7 @@ namespace SevnaBitcoinWallet.Tests
       result.CanSpendUnconfirmed.Should().Be(testCanSpendUnconfirmed.ToString());
 
       // Clean up
-      File.Delete($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}");
+      File.Delete(filePath);
     }
 
     /// <summary>
@@ -95,22 +99,23 @@ namespace SevnaBitcoinWallet.Tests
     public void Deserialize_ShouldThrowAnExceptionWhenFileDoesNotExist()
     {
       // Arrange
-      var currentDirectory = Environment.CurrentDirectory;
-
-      if (File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}"))
+      const string fileName = "Deserialize_ShouldThrowAnExceptionWhenFileDoesNotExist.json";
+      var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+      
+      if (File.Exists(filePath))
       {
-        File.Delete($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}");
+        File.Delete(filePath);
       }
 
-      File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}").Should().BeFalse();
+      File.Exists(filePath).Should().BeFalse();
 
       // Act
       try
       {
-        var result = ConfigurationFileSerializer.Deserialize();
+        ConfigurationFileSerializer.Deserialize(filePath);
 
         // Should not get here.
-        File.Exists($"{currentDirectory}\\{ConfigurationFileSerializer.ConfigurationFileName}").Should().BeFalse();
+        File.Exists(filePath).Should().BeFalse();
       }
       catch (FileNotFoundException ex)
       {
@@ -123,6 +128,5 @@ namespace SevnaBitcoinWallet.Tests
         ex.Should().BeNull();
       }
     }
-
   }
 }

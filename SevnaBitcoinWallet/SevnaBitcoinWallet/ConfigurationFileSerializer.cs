@@ -36,7 +36,7 @@ namespace SevnaBitcoinWallet
     /// <summary>
     /// Gets the name of the Configuration File.
     /// </summary>
-    public static string ConfigurationFileName { get; } = "Configuration.ini";
+    public static string ConfigurationFileName { get; private set; } = "Configuration.json";
 
     /// <summary>
     /// Gets or sets the default file name for a Bitcoin wallet.
@@ -65,12 +65,16 @@ namespace SevnaBitcoinWallet
     /// <param name="network">Client provided network.</param>
     /// <param name="connectionType">Client provided connection type.</param>
     /// <param name="canSpendUnconfirmed">Client provided bool to allow or disallow spending of unconfirmed coins.</param>
+    /// <param name="configurationFilePath">Client provided configuration file path.</param>
     internal static void Serialize(
       string walletFileName,
       string network,
       string connectionType,
-      string canSpendUnconfirmed)
+      string canSpendUnconfirmed,
+      string configurationFilePath = "")
     {
+      UpdateConfigurationFileName(configurationFilePath);
+
       var serializedContent = JsonConvert.SerializeObject(
         new ConfigurationFileSerializer(
           walletFileName,
@@ -84,9 +88,12 @@ namespace SevnaBitcoinWallet
     /// <summary>
     /// Deserializes Configuration information.
     /// </summary>
+    /// <param name="configurationFilePath">Client provided configuration file path.</param>
     /// <returns>A ConfigurationFileSerializer.</returns>
-    internal static ConfigurationFileSerializer Deserialize()
+    internal static ConfigurationFileSerializer Deserialize(string configurationFilePath = "")
     {
+      UpdateConfigurationFileName(configurationFilePath);
+
       if (File.Exists(ConfigurationFileName) == false)
       {
         throw new FileNotFoundException($"Configuration file does not exist. Create {Environment.CurrentDirectory}\\{ConfigurationFileName} and try again.");
@@ -94,6 +101,19 @@ namespace SevnaBitcoinWallet
 
       var fileContents = File.ReadAllText(ConfigurationFileName);
       return JsonConvert.DeserializeObject<ConfigurationFileSerializer>(fileContents);
+    }
+
+    /// <summary>
+    /// Updated ConfigurationFileName if parameter is different.
+    /// </summary>
+    /// <param name="configurationFilePath">Requested configuration file path.</param>
+    private static void UpdateConfigurationFileName(string configurationFilePath)
+    {
+      if (configurationFilePath.Equals(string.Empty) == false &&
+          configurationFilePath.Equals(ConfigurationFileName) == false)
+      {
+        ConfigurationFileName = configurationFilePath;
+      }
     }
   }
 }
