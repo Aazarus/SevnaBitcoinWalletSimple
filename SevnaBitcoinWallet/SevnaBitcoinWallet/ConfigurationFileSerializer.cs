@@ -14,6 +14,11 @@ namespace SevnaBitcoinWallet
   public class ConfigurationFileSerializer
   {
     /// <summary>
+    /// The default configuration file name.
+    /// </summary>
+    private const string DefaultConfigurationFileName = "Configuration.json";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationFileSerializer"/> class.
     /// </summary>
     /// <param name="walletFileName">Client provided wallet file name.</param>
@@ -36,7 +41,7 @@ namespace SevnaBitcoinWallet
     /// <summary>
     /// Gets the name of the Configuration File.
     /// </summary>
-    public static string ConfigurationFileName { get; private set; } = "Configuration.json";
+    public static string ConfigurationFileName { get; private set; } = DefaultConfigurationFileName;
 
     /// <summary>
     /// Gets or sets the default file name for a Bitcoin wallet.
