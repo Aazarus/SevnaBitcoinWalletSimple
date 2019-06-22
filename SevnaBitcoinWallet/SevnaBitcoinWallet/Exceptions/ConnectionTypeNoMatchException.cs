@@ -22,7 +22,7 @@ namespace SevnaBitcoinWallet.Exceptions
     /// Initializes a new instance of the <see cref="ConnectionTypeNoMatchException"/> class.
     /// </summary>
     /// <param name="message">Exception message.</param>
-    public ConnectionTypeNoMatchException(string message) 
+    public ConnectionTypeNoMatchException(string message)
       : base(message)
     {
     }

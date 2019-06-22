@@ -1,4 +1,8 @@
-﻿namespace SevnaBitcoinWallet.Exceptions
+﻿// <copyright file="NetworkNoMatchException.cs" company="Sevna Software LTD">
+// Copyright (c) Sevna Software LTD. All rights reserved.
+// </copyright>
+
+namespace SevnaBitcoinWallet.Exceptions
 {
   using System;
 

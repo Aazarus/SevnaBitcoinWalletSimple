@@ -101,7 +101,7 @@ namespace SevnaBitcoinWallet.Tests
       // Arrange
       const string fileName = "Deserialize_ShouldThrowAnExceptionWhenFileDoesNotExist.json";
       var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
-      
+
       if (File.Exists(filePath))
       {
         File.Delete(filePath);
