@@ -3,7 +3,7 @@
   using System;
 
   /// <summary>
-  /// Custom exception for no matching network.
+  /// Custom exception for no matching Network.
   /// </summary>
   public class NetworkNoMatchException : Exception
   {
