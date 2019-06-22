@@ -33,4 +33,8 @@
     <ProjectReference Include="..\SevnaBitcoinWallet\SevnaBitcoinWallet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
 </Project>
