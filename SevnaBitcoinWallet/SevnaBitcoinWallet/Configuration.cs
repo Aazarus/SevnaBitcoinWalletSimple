@@ -5,7 +5,7 @@
 namespace SevnaBitcoinWallet
 {
   using NBitcoin;
-  using SevnaBitcoinWallet.Extension;
+  using SevnaBitcoinWallet.Extensions;
 
   /// <summary>
   /// The following class creates a Configuration file which stores global settings.

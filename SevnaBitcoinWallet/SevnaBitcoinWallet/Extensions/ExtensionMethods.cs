@@ -2,9 +2,8 @@
 // Copyright (c) Sevna Software LTD. All rights reserved.
 // </copyright>
 
-namespace SevnaBitcoinWallet.Extension
+namespace SevnaBitcoinWallet.Extensions
 {
-  using System;
   using NBitcoin;
   using SevnaBitcoinWallet.Exceptions;
 

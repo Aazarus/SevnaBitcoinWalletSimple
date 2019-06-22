@@ -2,13 +2,13 @@
 // Copyright (c) Sevna Software LTD. All rights reserved.
 // </copyright>
 
-namespace SevnaBitcoinWallet.Tests
+namespace SevnaBitcoinWallet.Tests.Extensions
 {
   using System;
   using FluentAssertions;
   using NBitcoin;
   using SevnaBitcoinWallet.Exceptions;
-  using SevnaBitcoinWallet.Extension;
+  using SevnaBitcoinWallet.Extensions;
   using Xunit;
 
   /// <summary>
