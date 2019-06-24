@@ -74,7 +74,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for generate-wallet command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfGenerateWalletArgumentNotPresent()
@@ -94,10 +94,11 @@ namespace SevnaBitcoinWallet.Tests.Commands
       try
       {
         var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
       {
-        ex.Message.Should().Contain("Invalid argument to process: ");
+        ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
       }
       catch (Exception ex)
       {
@@ -170,6 +171,42 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for receive command.
+    /// </summary>
+    [Fact]
+    public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfReceiveArgumentNotPresent()
+    {
+      // Arrange
+      const string command = "receive";
+      var commands = new List<string>
+      {
+        command,
+        "generate-wallet", // <-- Should be argument for command e.g. "wallet-file=test1.json"
+        "wallet-file=test2.json",
+        "help",
+        "show-balances",
+        "wallet-file=test2.json",
+        "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
+      };
+
+      // Act
+      try
+      {
+        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here.
+        ex.Should().BeNull();
+      }
+    }
+
+    /// <summary>
     /// Tests FindMatchingCommandWithArguments correctly matches client provided command, recover-wallet, and
     /// provides command with arguments.
     /// </summary>
@@ -203,6 +240,44 @@ namespace SevnaBitcoinWallet.Tests.Commands
 
       // Assert
       commandWithArgs.Should().Equal(expected);
+    }
+
+    /// <summary>
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for receive command.
+    /// </summary>
+    [Fact]
+    public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfRecoverWalletArgumentNotPresent()
+    {
+      // Arrange
+      const string command = "recover-wallet";
+      var commands = new List<string>
+      {
+        command,
+        "receive",  // <-- Should be argument for command e.g. "wallet-file=test.json"
+        "wallet-file=test1.json",
+        "generate-wallet",
+        "wallet-file=test2.json",
+        "help",
+        "show-balances",
+        "wallet-file=test2.json",
+        "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
+      };
+
+      // Act
+      try
+      {
+        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here.
+        ex.Should().BeNull();
+      }
     }
 
     /// <summary>
@@ -248,6 +323,90 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected first argument for send command.
+    /// </summary>
+    [Fact]
+    public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfSendFirstArgumentNotPresent()
+    {
+      // Arrange
+      const string command = "send";
+      var commands = new List<string>
+      {
+        command,
+        "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4",  // <-- Should be argument for command e.g. "btc=1.00"
+        "wallet-file=test2.json",
+        "recover-wallet",
+        "wallet-file=test.json",
+        "receive",
+        "wallet-file=test1.json",
+        "generate-wallet",
+        "wallet-file=test2.json",
+        "help",
+        "show-balances",
+        "wallet-file=test2.json",
+        "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
+      };
+
+      // Act
+      try
+      {
+        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        ex.Message.Should().Contain("Argument should be 'btc=$AmountOfBitcoin' actual is:");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here.
+        ex.Should().BeNull();
+      }
+    }
+
+    /// <summary>
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected second argument for send command.
+    /// </summary>
+    [Fact]
+    public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfSendSecondArgumentNotPresent()
+    {
+      // Arrange
+      const string command = "send";
+      var commands = new List<string>
+      {
+        command,
+        "btc=1.00",
+        "wallet-file=test2.json", // <-- Should be argument for command e.g. "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4"
+        "recover-wallet",
+        "wallet-file=test.json",
+        "receive",
+        "wallet-file=test1.json",
+        "generate-wallet",
+        "wallet-file=test2.json",
+        "help",
+        "show-balances",
+        "wallet-file=test2.json",
+        "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
+      };
+
+      // Act
+      try
+      {
+        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        ex.Message.Should().Contain("Argument should be 'address=$BitcoinAddress' actual is:");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here.
+        ex.Should().BeNull();
+      }
+    }
+
+    /// <summary>
     /// Tests FindMatchingCommandWithArguments correctly matches client provided command, show-balances, and
     /// provides command with arguments.
     /// </summary>
@@ -287,6 +446,47 @@ namespace SevnaBitcoinWallet.Tests.Commands
       commandWithArgs.Should().Equal(expected);
     }
 
+    /// <summary>
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for show-balances command.
+    /// </summary>
+    [Fact]
+    public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfShowBalancesArgumentNotPresent()
+    {
+      // Arrange
+      const string command = "show-balances";
+      var commands = new List<string>
+      {
+        command,
+        "send", // <-- Should be argument for command e.g. "wallet-file=test2.json"
+        "btc=1.00",
+        "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4",
+        "wallet-file=test2.json",
+        "recover-wallet",
+        "wallet-file=test.json",
+        "receive",
+        "wallet-file=test1.json",
+        "generate-wallet",
+        "wallet-file=test2.json",
+        "help",
+        "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
+      };
+
+      // Act
+      try
+      {
+        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here.
+        ex.Should().BeNull();
+      }
+    }
 
     /// <summary>
     /// Tests FindMatchingCommandWithArguments correctly matches client provided command, show-history, and
@@ -326,6 +526,48 @@ namespace SevnaBitcoinWallet.Tests.Commands
 
       // Assert
       commandWithArgs.Should().Equal(expected);
+    }
+
+    /// <summary>
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for show-history command.
+    /// </summary>
+    [Fact]
+    public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfShowHistoryArgumentNotPresent()
+    {
+      // Arrange
+      const string command = "show-history";
+      var commands = new List<string>
+      {
+        command,
+        "send", // <-- Should be argument for command e.g. "wallet-file=test.json"
+        "btc=1.00",
+        "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4",
+        "wallet-file=test2.json",
+        "recover-wallet",
+        "wallet-file=test.json",
+        "receive",
+        "wallet-file=test1.json",
+        "generate-wallet",
+        "wallet-file=test2.json",
+        "help",
+        "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
+      };
+
+      // Act
+      try
+      {
+        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here.
+        ex.Should().BeNull();
+      }
     }
 
     /// <summary>

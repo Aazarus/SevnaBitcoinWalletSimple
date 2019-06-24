@@ -6,7 +6,6 @@ namespace SevnaBitcoinWallet.Commands
 {
   using System;
   using System.Collections.Generic;
-  using System.Runtime.CompilerServices;
   using SevnaBitcoinWallet.Exceptions;
 
   /// <summary>
@@ -84,7 +83,7 @@ namespace SevnaBitcoinWallet.Commands
           return new List<string>
           {
             commands[0],
-            ProcessStringForValidGenerateWalletArgument(commands[1]), //ToDo: Ensure command is valid by checking for = specific for this command
+            ProcessStringForValidWalletFileArgument(commands[1]),
           };
         case "help":
           return new List<string>
@@ -95,53 +94,38 @@ namespace SevnaBitcoinWallet.Commands
           return new List<string>
           {
             commands[0],
-            commands[1], //ToDo: Ensure command is valid by checking for = specific for this command
+            ProcessStringForValidWalletFileArgument(commands[1]),
           };
         case "recover-wallet":
           return new List<string>
           {
             commands[0],
-            commands[1], //ToDo: Ensure command is valid by checking for = specific for this command
+            ProcessStringForValidWalletFileArgument(commands[1]),
+
           };
         case "send":
           return new List<string>
           {
             commands[0],
-            commands[1], //ToDo: Ensure command is valid by checking for = specific for this command
-            commands[2], //ToDo: Ensure command is valid by checking for = specific for this command
-            commands[3], //ToDo: Ensure command is valid by checking for = specific for this command
+            ProcessStringForValidBtcArgument(commands[1]),
+            ProcessStringForValidAddressArgument(commands[2]),
+            ProcessStringForValidWalletFileArgument(commands[3]),
           };
         case "show-balances":
           return new List<string>
           {
             commands[0],
-            commands[1], //ToDo: Ensure command is valid by checking for = specific for this command
+            ProcessStringForValidWalletFileArgument(commands[1]),
           };
         case "show-history":
           return new List<string>
           {
             commands[0],
-            commands[1], //ToDo: Ensure command is valid by checking for = specific for this command
+            ProcessStringForValidWalletFileArgument(commands[1]),
           };
         default:
           throw new CommandNotFoundException($"Unknown command provided: {commandToProcess}");
       }
-    }
-
-    /// <summary>
-    /// Ensures argument is a valid generate-wallet argument.
-    /// </summary>
-    /// <param name="argumentToProcess">Argument to process.</param>
-    /// <returns>Argument if valid.</returns>
-    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
-    private static string ProcessStringForValidGenerateWalletArgument(string argumentToProcess)
-    {
-      if (argumentToProcess.Contains("wallet-file="))
-      {
-        return argumentToProcess;
-      }
-
-      throw new InvalidCommandArgumentFound($"Invalid argument to process: {argumentToProcess}");
     }
 
     /// <summary>
@@ -153,6 +137,54 @@ namespace SevnaBitcoinWallet.Commands
     public static List<string> RemoveMatchingCommandInCollection(string commandToProcess, ref List<string> commands)
     {
       throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Ensures argument is a valid wallet-file argument.
+    /// </summary>
+    /// <param name="argumentToProcess">Argument to process.</param>
+    /// <returns>Argument if valid.</returns>
+    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    private static string ProcessStringForValidWalletFileArgument(string argumentToProcess)
+    {
+      if (argumentToProcess.Contains("wallet-file="))
+      {
+        return argumentToProcess;
+      }
+
+      throw new InvalidCommandArgumentFound($"Argument should be 'wallet-file=$NameOfWalletFile' actual is: {argumentToProcess}");
+    }
+
+    /// <summary>
+    /// Ensures argument is a valid btc argument.
+    /// </summary>
+    /// <param name="argumentToProcess">Argument to process.</param>
+    /// <returns>Argument if valid.</returns>
+    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    private static string ProcessStringForValidBtcArgument(string argumentToProcess)
+    {
+      if (argumentToProcess.Contains("btc="))
+      {
+        return argumentToProcess;
+      }
+
+      throw new InvalidCommandArgumentFound($"Argument should be 'btc=$AmountOfBitcoin' actual is: {argumentToProcess}");
+    }
+
+    /// <summary>
+    /// Ensures argument is a valid address argument.
+    /// </summary>
+    /// <param name="argumentToProcess">Argument to process.</param>
+    /// <returns>Argument if valid.</returns>
+    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    private static string ProcessStringForValidAddressArgument(string argumentToProcess)
+    {
+      if (argumentToProcess.Contains("address="))
+      {
+        return argumentToProcess;
+      }
+
+      throw new InvalidCommandArgumentFound($"Argument should be 'address=$BitcoinAddress' actual is: {argumentToProcess}");
     }
   }
 }
