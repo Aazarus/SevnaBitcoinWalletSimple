@@ -37,7 +37,7 @@ namespace SevnaBitcoinWallet
     /// <summary>
     /// Gets a value indicating whether unconfirmed coins can be spent.
     /// </summary>
-    public static bool CanSpendUnconfirmed { get; private set; } = false;
+    public static bool CanSpendUnconfirmed { get; private set; }
 
     /// <summary>
     /// Saves the Configuration information to file.
