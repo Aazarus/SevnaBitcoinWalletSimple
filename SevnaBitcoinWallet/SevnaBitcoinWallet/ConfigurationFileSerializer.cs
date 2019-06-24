@@ -95,6 +95,7 @@ namespace SevnaBitcoinWallet
     /// </summary>
     /// <param name="configurationFilePath">Client provided configuration file path.</param>
     /// <returns>A ConfigurationFileSerializer.</returns>
+    /// <exception cref="FileNotFoundException">Configuration File missing.</exception>
     internal static ConfigurationFileSerializer Deserialize(string configurationFilePath = "")
     {
       UpdateConfigurationFileName(configurationFilePath);
