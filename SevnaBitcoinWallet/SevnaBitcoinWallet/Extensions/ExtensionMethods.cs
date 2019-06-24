@@ -18,6 +18,7 @@ namespace SevnaBitcoinWallet.Extensions
     /// <param name="network">Class to add extension method to.</param>
     /// <param name="parameters">The string representation of the Network.</param>
     /// <returns>A Network value.</returns>
+    /// <exception cref="NetworkNoMatchException">Not matching NetworkType found.</exception>
     public static Network GetNetworkFromString(this Network network, params object[] parameters)
     {
       var networkToProcess = parameters[0].ToString();
@@ -44,6 +45,7 @@ namespace SevnaBitcoinWallet.Extensions
     /// <param name="connectionType">Class to add extension method to.</param>
     /// <param name="parameters">The string representation of the ConnectionType.</param>
     /// <returns>A ConnectionType value.</returns>
+    /// <exception cref="ConnectionTypeNoMatchException">No matching ConnectionType value found.</exception>
     public static ConnectionType GetConnectionTypeFromString(this ConnectionType connectionType, params object[] parameters)
     {
       var connectionTypeToProcess = parameters[0].ToString();
