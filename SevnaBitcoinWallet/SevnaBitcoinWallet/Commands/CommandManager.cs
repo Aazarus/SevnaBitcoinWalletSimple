@@ -6,6 +6,7 @@ namespace SevnaBitcoinWallet.Commands
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq.Expressions;
   using SevnaBitcoinWallet.Exceptions;
 
   /// <summary>
@@ -75,56 +76,64 @@ namespace SevnaBitcoinWallet.Commands
     /// <param name="commands">List of Commands.</param>
     /// <returns>Collection with Command and Arguments.</returns>
     /// <exception cref="CommandNotFoundException">Command to process is unknown.</exception>
+    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
     public static List<string> FindMatchingCommandWithArguments(string commandToProcess, List<string> commands)
     {
-      switch (commandToProcess.ToLower())
+      try
       {
-        case "generate-wallet":
-          return new List<string>
-          {
-            commands[0],
-            ProcessStringForValidWalletFileArgument(commands[1]),
-          };
-        case "help":
-          return new List<string>
-          {
-            "help",
-          };
-        case "receive":
-          return new List<string>
-          {
-            commands[0],
-            ProcessStringForValidWalletFileArgument(commands[1]),
-          };
-        case "recover-wallet":
-          return new List<string>
-          {
-            commands[0],
-            ProcessStringForValidWalletFileArgument(commands[1]),
+        switch (commandToProcess.ToLower())
+        {
+          case "generate-wallet":
+            return new List<string>
+            {
+              commands[0],
+              ProcessStringForValidWalletFileArgument(commands[1]),
+            };
+          case "help":
+            return new List<string>
+            {
+              "help",
+            };
+          case "receive":
+            return new List<string>
+            {
+              commands[0],
+              ProcessStringForValidWalletFileArgument(commands[1]),
+            };
+          case "recover-wallet":
+            return new List<string>
+            {
+              commands[0],
+              ProcessStringForValidWalletFileArgument(commands[1]),
 
-          };
-        case "send":
-          return new List<string>
-          {
-            commands[0],
-            ProcessStringForValidBtcArgument(commands[1]),
-            ProcessStringForValidAddressArgument(commands[2]),
-            ProcessStringForValidWalletFileArgument(commands[3]),
-          };
-        case "show-balances":
-          return new List<string>
-          {
-            commands[0],
-            ProcessStringForValidWalletFileArgument(commands[1]),
-          };
-        case "show-history":
-          return new List<string>
-          {
-            commands[0],
-            ProcessStringForValidWalletFileArgument(commands[1]),
-          };
-        default:
-          throw new CommandNotFoundException($"Unknown command provided: {commandToProcess}");
+            };
+          case "send":
+            return new List<string>
+            {
+              commands[0],
+              ProcessStringForValidBtcArgument(commands[1]),
+              ProcessStringForValidAddressArgument(commands[2]),
+              ProcessStringForValidWalletFileArgument(commands[3]),
+            };
+          case "show-balances":
+            return new List<string>
+            {
+              commands[0],
+              ProcessStringForValidWalletFileArgument(commands[1]),
+            };
+          case "show-history":
+            return new List<string>
+            {
+              commands[0],
+              ProcessStringForValidWalletFileArgument(commands[1]),
+            };
+          default:
+            throw new CommandNotFoundException($"Unknown command provided: {commandToProcess}.");
+        }
+      }
+      catch (InvalidCommandArgumentFound ex)
+      {
+        throw new InvalidCommandArgumentFound($"{ex.Message}. For Command '{commandToProcess}'.");
       }
     }
 
