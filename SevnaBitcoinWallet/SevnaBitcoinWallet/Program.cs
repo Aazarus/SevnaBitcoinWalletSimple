@@ -4,8 +4,6 @@
 
 namespace SevnaBitcoinWallet
 {
-  using System;
-
   /// <summary>
   /// App entry class.
   /// </summary>
@@ -17,7 +15,6 @@ namespace SevnaBitcoinWallet
     /// <param name="args">Arguments passed into app.</param>
     public static void Main(string[] args)
     {
-      Console.WriteLine("Hello World!");
     }
   }
 }
