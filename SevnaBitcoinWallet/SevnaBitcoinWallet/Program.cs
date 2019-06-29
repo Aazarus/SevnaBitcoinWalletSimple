@@ -15,6 +15,8 @@ namespace SevnaBitcoinWallet
     /// <param name="args">Arguments passed into app.</param>
     public static void Main(string[] args)
     {
+      var walletManager = new WalletManager();
+      walletManager.AddCommands(args);
     }
   }
 }
