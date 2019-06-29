@@ -6,6 +6,7 @@ namespace SevnaBitcoinWallet.Tests
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using FluentAssertions;
   using SevnaBitcoinWallet.Exceptions;
   using Xunit;
@@ -23,7 +24,23 @@ namespace SevnaBitcoinWallet.Tests
     };
 
     /// <summary>
-    /// Tests the WalletManager constructor correctly adds CommandManager.
+    /// Initializes a new instance of the <see cref="WalletManagerTests"/> class.
+    /// </summary>
+    public WalletManagerTests()
+    {
+      try
+      {
+        // Ensure Wallets directory doesn't already exist
+        Directory.Delete("Wallets", true);
+      }
+      catch (DirectoryNotFoundException)
+      {
+        // This is not a problem as we are deleting the directory anyway.
+      }
+    }
+
+    /// <summary>
+    /// Tests the WalletManager constructor correctly adds CommandIdentifier.
     /// </summary>
     [Fact]
     public void WalletManager_ShouldEnsureConfigurationLoadOnInstantiation()
@@ -40,7 +57,7 @@ namespace SevnaBitcoinWallet.Tests
     }
 
     /// <summary>
-    /// Tests the WalletManager constructor correctly adds CommandManager.
+    /// Tests the WalletManager constructor correctly adds CommandIdentifier.
     /// </summary>
     [Fact]
     public void AddCommands_ShouldAddCommandsAsDefined()
@@ -195,6 +212,60 @@ namespace SevnaBitcoinWallet.Tests
     }
 
     /// <summary>
+    /// Tests the ProcessNextCommand method reduces the Command collection by removing the processed command and arguments.
+    /// </summary>
+    [Fact]
+    public void ProcessNextCommand_ShouldRemoveTheProcessedCommandFromCollectionOnceComplete()
+    {
+      // Arrange
+      string[] commandsAndArgs =
+      {
+        "generate-wallet", "wallet-file=BitcoinWallet.json",
+        "recover-wallet", "wallet-file=test1.json",
+        "show-balances", "wallet-file=test1.json",
+        "send", "btc=0.0001", "address=mq6fK8fkFyCy9p53m4Gf4fiX2XCHvcwgi1", "wallet-file=test1.json",
+      };
+
+      var walletManager = new WalletManager();
+      walletManager.AddCommands(commandsAndArgs);
+
+      var currentCommandCount = walletManager.Commands.Count;
+
+      // Act
+      var result = walletManager.ProcessNextCommand();
+
+      // Assert
+      walletManager.Commands.Count.Should().NotBe(currentCommandCount);
+      walletManager.Commands.Count.Should().Be(currentCommandCount - 2);
+    }
+
+    /// <summary>
+    /// Tests the ProcessNextCommand method returns the Mnemonic of a newly generated wallet.
+    /// </summary>
+    [Fact]
+    public void ProcessNextCommand_ShouldReturnTheMnemonicForProcessingGenerateNewWalletCommand()
+    {
+      // Arrange
+
+      string[] commandsAndArgs =
+      {
+        "generate-wallet", "wallet-file=BitcoinWallet.json",
+        "recover-wallet", "wallet-file=test1.json",
+        "show-balances", "wallet-file=test1.json",
+        "send", "btc=0.0001", "address=mq6fK8fkFyCy9p53m4Gf4fiX2XCHvcwgi1", "wallet-file=test1.json",
+      };
+
+      var walletManager = new WalletManager();
+      walletManager.AddCommands(commandsAndArgs);
+
+      // Act
+      var result = walletManager.ProcessNextCommand();
+
+      // Assert
+      result.Should().NotBeNullOrEmpty();
+    }
+
+    /// <summary>
     /// Tests the ProcessCommands method throws CommandNotFoundException when no commands are available.
     /// </summary>
     [Fact]
@@ -207,12 +278,12 @@ namespace SevnaBitcoinWallet.Tests
       // Act
       try
       {
-        walletManager.ProcessCommands();
+        var result = walletManager.ProcessCommands();
       }
       catch (CommandNotFoundException ex)
       {
         // Assert
-        ex.Message.Should().Be("No CommandManager found.");
+        ex.Message.Should().Be("No CommandIdentifier found.");
       }
       catch (Exception ex)
       {
@@ -233,12 +304,12 @@ namespace SevnaBitcoinWallet.Tests
       // Act
       try
       {
-        walletManager.ProcessCommand();
+        var result = walletManager.ProcessCommands();
       }
       catch (CommandNotFoundException ex)
       {
         // Assert
-        ex.Message.Should().Be("No CommandManager Available.");
+        ex.Message.Should().Be("No CommandIdentifier Available.");
       }
       catch (Exception ex)
       {
