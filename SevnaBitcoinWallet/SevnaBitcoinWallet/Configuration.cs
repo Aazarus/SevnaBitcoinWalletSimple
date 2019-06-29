@@ -4,6 +4,7 @@
 
 namespace SevnaBitcoinWallet
 {
+  using System.IO;
   using NBitcoin;
   using SevnaBitcoinWallet.Extensions;
 
@@ -59,12 +60,20 @@ namespace SevnaBitcoinWallet
     /// <param name="filePath">Path to file.</param>
     public static void Load(string filePath = "")
     {
-      var configurationFileContents = ConfigurationFileSerializer.Deserialize(filePath);
+      try
+      {
+        var configurationFileContents = ConfigurationFileSerializer.Deserialize(filePath);
 
-      DefaultWalletFileName = configurationFileContents.WalletFileName;
-      DefaultNetwork = DefaultNetwork.GetNetworkFromString(configurationFileContents.Network);
-      DefaultConnectionType = DefaultConnectionType.GetConnectionTypeFromString(configurationFileContents.ConnectionType);
-      CanSpendUnconfirmed = bool.Parse(configurationFileContents.CanSpendUnconfirmed);
+        DefaultWalletFileName = configurationFileContents.WalletFileName;
+        DefaultNetwork = DefaultNetwork.GetNetworkFromString(configurationFileContents.Network);
+        DefaultConnectionType =
+          DefaultConnectionType.GetConnectionTypeFromString(configurationFileContents.ConnectionType);
+        CanSpendUnconfirmed = bool.Parse(configurationFileContents.CanSpendUnconfirmed);
+      }
+      catch (FileNotFoundException)
+      {
+        // ToDo: Log
+      }
     }
   }
 }
