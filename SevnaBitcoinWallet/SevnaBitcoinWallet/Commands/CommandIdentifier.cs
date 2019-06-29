@@ -1,4 +1,4 @@
-﻿// <copyright file="CommandManager.cs" company="Sevna Software LTD">
+﻿// <copyright file="CommandIdentifier.cs" company="Sevna Software LTD">
 // Copyright (c) Sevna Software LTD. All rights reserved.
 // </copyright>
 
@@ -6,16 +6,15 @@ namespace SevnaBitcoinWallet.Commands
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq.Expressions;
   using SevnaBitcoinWallet.Exceptions;
 
   /// <summary>
   /// Defines commandline commands.
   /// </summary>
-  public class CommandManager
+  public class CommandIdentifier
   {
     /// <summary>
-    /// Represents the Approved CommandManager.
+    /// Represents the Approved CommandIdentifier.
     /// </summary>
     public enum ApprovedCommands
     {
@@ -105,7 +104,6 @@ namespace SevnaBitcoinWallet.Commands
             {
               commands[0],
               ProcessStringForValidWalletFileArgument(commands[1]),
-
             };
           case "send":
             return new List<string>

@@ -12,13 +12,13 @@ namespace SevnaBitcoinWallet.Tests.Commands
   using Xunit;
 
   /// <summary>
-  /// Tests the CommandManager class.
+  /// Tests the CommandIdentifier class.
   /// </summary>
   /// ToDo: Add tests to throw exception if a commands expected arguments are not present.
   public class CommandsTests
   {
     /// <summary>
-    /// Tests the CommandManager class accepts the correct commands.
+    /// Tests the CommandIdentifier class accepts the correct commands.
     /// </summary>
     [Fact]
     public void Commands_ShouldHoldCorrectAcceptedCommands()
@@ -37,8 +37,8 @@ namespace SevnaBitcoinWallet.Tests.Commands
 
       // Act
       // Assert
-      CommandManager.ApprovedCommandSet.Count.Should().Be(approvedCommands.Count);
-      CommandManager.ApprovedCommandSet.Should().BeEquivalentTo(approvedCommands);
+      CommandIdentifier.ApprovedCommandSet.Count.Should().Be(approvedCommands.Count);
+      CommandIdentifier.ApprovedCommandSet.Should().BeEquivalentTo(approvedCommands);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -93,7 +93,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -131,7 +131,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -165,7 +165,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -193,7 +193,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -238,7 +238,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -268,7 +268,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -319,7 +319,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -353,7 +353,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -396,7 +396,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -436,11 +436,10 @@ namespace SevnaBitcoinWallet.Tests.Commands
         "send", "btc=1.00", "address=mq6fK8fkFyCy9p53m4GG4fiE2XCKvcwgi4", "wallet-file=test2.json",
       };
 
-
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -489,7 +488,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -523,7 +522,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -572,7 +571,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       };
 
       // Act
-      var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+      var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
 
       // Assert
       commandWithArgs.Should().Equal(expected);
@@ -606,7 +605,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
       catch (InvalidCommandArgumentFound ex)
@@ -640,7 +639,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
       // Act
       try
       {
-        var commandWithArgs = CommandManager.FindMatchingCommandWithArguments(command, commands);
+        var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
       }
       catch (CommandNotFoundException ex)
       {
