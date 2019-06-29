@@ -7,7 +7,7 @@ namespace SevnaBitcoinWallet.Exceptions
   using System;
 
   /// <summary>
-  /// Custom exception for CommandManager provided as arguments.
+  /// Custom exception for null or empty Command arguments.
   /// </summary>
   public class CommandArgumentNullOrEmptyException : Exception
   {
