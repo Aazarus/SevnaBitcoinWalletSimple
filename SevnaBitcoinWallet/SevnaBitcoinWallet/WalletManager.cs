@@ -8,11 +8,13 @@ namespace SevnaBitcoinWallet
   using System.Linq;
   using SevnaBitcoinWallet.Commands;
   using SevnaBitcoinWallet.Exceptions;
+  using SevnaBitcoinWallet.Wrapper;
 
   /// <summary>
   /// The following class manages the Wallet.
   /// </summary>
   /// ToDo: Consider making this a singleton.
+  /// ToDo: As this class will need to get a password from the user when dependency injection is submitted we will need to introduce an interface that supplies the user provided password.
   public sealed class WalletManager
   {
     /// <summary>
@@ -33,11 +35,11 @@ namespace SevnaBitcoinWallet
     /// Gets the number of commands to process.
     /// </summary>
     /// ToDo: Improve this properties name, it is not just the commands. It is the commands and their corresponding arguments.
-    /// ToDo: Consider moving this to the CommandManager, doesn't make much sense that it is in this class.
+    /// ToDo: Consider moving this to the CommandIdentifier, doesn't make much sense that it is in this class.
     public List<string> Commands { get; }
 
     /// <summary>
-    /// Adds CommandManager to the list of CommandManager to process.
+    /// Adds CommandIdentifier to the list of CommandIdentifier to process.
     /// </summary>
     /// <param name="argumentsToAdd">Arguments to add.</param>
     /// <exception cref="CommandArgumentNullOrEmptyException">Null or Empty arguments were provided.</exception>
@@ -55,35 +57,46 @@ namespace SevnaBitcoinWallet
     /// <summary>
     /// Processes each command in the List.
     /// </summary>
-    /// <exception cref="CommandNotFoundException">CommandManager not found.</exception>
-    public void ProcessCommands()
+    /// <returns>Collection of results from running commands.</returns>
+    /// <exception cref="CommandNotFoundException">CommandIdentifier not found.</exception>
+    public IEnumerable<string> ProcessCommands()
     {
+      var result = new List<string>();
       while (this.CanContinueToProcessCommands())
       {
         try
         {
-          this.ProcessCommand();
+          result.Add(this.Commands.First());
+          result.Add(this.ProcessNextCommand());
         }
         catch (CommandNotFoundException)
         {
-          throw new CommandNotFoundException("No CommandManager found.");
+          throw new CommandNotFoundException("No CommandIdentifier found.");
         }
       }
+
+      return result;
     }
 
     /// <summary>
-    /// Processes a command.
+    /// Processes the next command.
     /// </summary>
+    /// <returns>Result of processing command.</returns>
     /// <exception cref="CommandNotFoundException">Command not found for index.</exception>
-    public void ProcessCommand()
+    public string ProcessNextCommand()
     {
       if (this.Commands.Count == 0)
       {
-        throw new CommandNotFoundException("No CommandManager Available.");
+        throw new CommandNotFoundException("No CommandIdentifier Available.");
       }
 
-      var identifiedCommandToProcess = this.GetCommandToProcess();
-      List<string> commandWithArguments = CommandManager.FindMatchingCommandWithArguments(identifiedCommandToProcess, this.Commands);
+      var nextCommandToProcess = this.GetNextCommandToProcess();
+      var commandWithArguments = CommandIdentifier.FindMatchingCommandWithArguments(nextCommandToProcess, this.Commands);
+
+      var result = BitcoinLibrary.ProcessCommand(commandWithArguments);
+      this.CleanUpPostCommandProcess(commandWithArguments);
+
+      return result;
     }
 
     /// <summary>
@@ -114,7 +127,7 @@ namespace SevnaBitcoinWallet
     /// </summary>
     /// <returns>Command to process as string.</returns>
     /// <exception cref="CommandNotFoundException">Command not found for index.</exception>
-    private string GetCommandToProcess()
+    private string GetNextCommandToProcess()
     {
       return this.Commands.First() ?? throw new CommandNotFoundException("No Command found.");
     }
@@ -128,6 +141,21 @@ namespace SevnaBitcoinWallet
       lock (this.threadLock)
       {
         return this.Commands.Count > 0;
+      }
+    }
+
+    /// <summary>
+    /// Removes the processed command and arguments from the Command collection.
+    /// </summary>
+    /// <param name="commandWithArguments">Command with arguments to remove.</param>
+    private void CleanUpPostCommandProcess(IEnumerable<string> commandWithArguments)
+    { // ToDo: Cleaner way to do this with LINQ?
+      foreach (var element in commandWithArguments)
+      {
+        if (this.Commands.First() == element)
+        {
+          this.Commands.RemoveAt(0);
+        }
       }
     }
   }
