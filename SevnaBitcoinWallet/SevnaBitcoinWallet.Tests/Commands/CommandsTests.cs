@@ -74,7 +74,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for generate-wallet command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected argument for generate-wallet command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfGenerateWalletArgumentNotPresent()
@@ -96,7 +96,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
         ex.Message.Should().Contain("For Command 'generate-wallet'");
@@ -172,7 +172,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for receive command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected argument for receive command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfReceiveArgumentNotPresent()
@@ -196,7 +196,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
         ex.Message.Should().Contain("For Command 'receive'.");
@@ -245,7 +245,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for receive command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected argument for receive command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfRecoverWalletArgumentNotPresent()
@@ -271,7 +271,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
         ex.Message.Should().Contain("For Command 'recover-wallet'.");
@@ -326,7 +326,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected first argument for send command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected first argument for send command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfSendFirstArgumentNotPresent()
@@ -356,7 +356,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'btc=$AmountOfBitcoin' actual is:");
         ex.Message.Should().Contain("For Command 'send'.");
@@ -369,7 +369,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected second argument for send command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected second argument for send command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfSendSecondArgumentNotPresent()
@@ -399,7 +399,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'address=$BitcoinAddress' actual is:");
         ex.Message.Should().Contain("For Command 'send'.");
@@ -412,7 +412,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected third argument for send command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected third argument for send command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfSendThirdArgumentNotPresent()
@@ -442,7 +442,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
         ex.Message.Should().Contain("For Command 'send'.");
@@ -495,7 +495,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for show-balances command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected argument for show-balances command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfShowBalancesArgumentNotPresent()
@@ -525,7 +525,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
         ex.Message.Should().Contain("For Command 'show-balances'.");
@@ -578,7 +578,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
     }
 
     /// <summary>
-    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFound if element does not contain expected argument for show-history command.
+    /// Tests FindMatchingCommandWithArguments throws InvalidCommandArgumentFoundException if element does not contain expected argument for show-history command.
     /// </summary>
     [Fact]
     public void FindMatchingCommandWithArguments_ShouldThrowCustomExceptionIfShowHistoryArgumentNotPresent()
@@ -608,7 +608,7 @@ namespace SevnaBitcoinWallet.Tests.Commands
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
         ex.Message.Should().Contain("Argument should be 'wallet-file=$NameOfWalletFile' actual is:");
         ex.Message.Should().Contain("For Command 'show-history'.");

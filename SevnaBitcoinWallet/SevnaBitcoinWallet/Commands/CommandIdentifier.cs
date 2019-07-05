@@ -75,7 +75,7 @@ namespace SevnaBitcoinWallet.Commands
     /// <param name="commands">List of Commands.</param>
     /// <returns>Collection with Command and Arguments.</returns>
     /// <exception cref="CommandNotFoundException">Command to process is unknown.</exception>
-    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is not valid.</exception>
     public static List<string> FindMatchingCommandWithArguments(string commandToProcess, List<string> commands)
     {
       try
@@ -129,9 +129,9 @@ namespace SevnaBitcoinWallet.Commands
             throw new CommandNotFoundException($"Unknown command provided: {commandToProcess}.");
         }
       }
-      catch (InvalidCommandArgumentFound ex)
+      catch (InvalidCommandArgumentFoundException ex)
       {
-        throw new InvalidCommandArgumentFound($"{ex.Message}. For Command '{commandToProcess}'.");
+        throw new InvalidCommandArgumentFoundException($"{ex.Message}. For Command '{commandToProcess}'.");
       }
     }
 
@@ -151,7 +151,7 @@ namespace SevnaBitcoinWallet.Commands
     /// </summary>
     /// <param name="argumentToProcess">Argument to process.</param>
     /// <returns>Argument if valid.</returns>
-    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is not valid.</exception>
     private static string ProcessStringForValidWalletFileArgument(string argumentToProcess)
     {
       if (argumentToProcess.Contains("wallet-file="))
@@ -159,7 +159,7 @@ namespace SevnaBitcoinWallet.Commands
         return argumentToProcess;
       }
 
-      throw new InvalidCommandArgumentFound($"Argument should be 'wallet-file=$NameOfWalletFile' actual is: {argumentToProcess}");
+      throw new InvalidCommandArgumentFoundException($"Argument should be 'wallet-file=$NameOfWalletFile' actual is: {argumentToProcess}");
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ namespace SevnaBitcoinWallet.Commands
     /// </summary>
     /// <param name="argumentToProcess">Argument to process.</param>
     /// <returns>Argument if valid.</returns>
-    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is not valid.</exception>
     private static string ProcessStringForValidBtcArgument(string argumentToProcess)
     {
       if (argumentToProcess.Contains("btc="))
@@ -175,7 +175,7 @@ namespace SevnaBitcoinWallet.Commands
         return argumentToProcess;
       }
 
-      throw new InvalidCommandArgumentFound($"Argument should be 'btc=$AmountOfBitcoin' actual is: {argumentToProcess}");
+      throw new InvalidCommandArgumentFoundException($"Argument should be 'btc=$AmountOfBitcoin' actual is: {argumentToProcess}");
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ namespace SevnaBitcoinWallet.Commands
     /// </summary>
     /// <param name="argumentToProcess">Argument to process.</param>
     /// <returns>Argument if valid.</returns>
-    /// <exception cref="InvalidCommandArgumentFound">Command argument is not valid.</exception>
+    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is not valid.</exception>
     private static string ProcessStringForValidAddressArgument(string argumentToProcess)
     {
       if (argumentToProcess.Contains("address="))
@@ -191,7 +191,7 @@ namespace SevnaBitcoinWallet.Commands
         return argumentToProcess;
       }
 
-      throw new InvalidCommandArgumentFound($"Argument should be 'address=$BitcoinAddress' actual is: {argumentToProcess}");
+      throw new InvalidCommandArgumentFoundException($"Argument should be 'address=$BitcoinAddress' actual is: {argumentToProcess}");
     }
   }
 }

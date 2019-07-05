@@ -63,7 +63,7 @@ namespace SevnaBitcoinWallet.Wrapper
 
         return string.Join(",", mnemonic.Words);
       }
-      catch (InvalidCommandArgumentFound)
+      catch (InvalidCommandArgumentFoundException)
       {
         // ToDo: Log
         throw new GenerateWalletFailedException("Could not generate wallet 'wallet-file' argument is invalid.");
@@ -77,7 +77,7 @@ namespace SevnaBitcoinWallet.Wrapper
     /// <param name="argumentOfInterest">Name of the argument of interest.</param>
     /// <param name="required">Is the argument required.</param>
     /// <returns>The argument value.</returns>
-    /// <exception cref="InvalidCommandArgumentFound">Command argument is missing or missing a value.</exception>
+    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is missing or missing a value.</exception>
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
     private static string GetArgumentValue(IEnumerable<string> args, string argumentOfInterest, bool required = true)
     {
@@ -86,7 +86,7 @@ namespace SevnaBitcoinWallet.Wrapper
 
       if (required && string.IsNullOrEmpty(argValue))
       {
-        throw new InvalidCommandArgumentFound($"Expected an argument value but was not received. Invalid for argument: {arg}");
+        throw new InvalidCommandArgumentFoundException($"Expected an argument value but was not received. Invalid for argument: {arg}");
       }
 
       return argValue;
