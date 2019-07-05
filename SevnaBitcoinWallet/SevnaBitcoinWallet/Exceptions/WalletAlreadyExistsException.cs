@@ -5,8 +5,6 @@
 namespace SevnaBitcoinWallet.Exceptions
 {
   using System;
-  using System.Collections.Generic;
-  using System.Text;
 
   /// <summary>
   /// Custom exception for when a Wallet File already exists.

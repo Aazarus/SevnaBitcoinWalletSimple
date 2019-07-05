@@ -165,7 +165,7 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
       // Arrange
 
       // Act
-
+      
       // Assert
       Assert.True(false);
     }

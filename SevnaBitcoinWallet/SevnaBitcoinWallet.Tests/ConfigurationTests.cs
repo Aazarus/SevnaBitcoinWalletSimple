@@ -22,7 +22,7 @@ namespace SevnaBitcoinWallet.Tests
     public void Save_CorrectlySerializesInformationToFile()
     {
       // Arrange
-      const string fileName = "Save_CorrectlySerializesInformationToFile.json";
+      var fileName = $"Save_CorrectlySerializesInformationToFile{DateTime.Now:HH-mm-ss}.json";
       var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
 
       // Act

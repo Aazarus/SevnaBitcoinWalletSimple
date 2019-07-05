@@ -22,7 +22,7 @@ namespace SevnaBitcoinWallet.Tests
     public void Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent()
     {
       // Arrange
-      const string fileName = "Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent.json";
+      var fileName = $"Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent_{DateTime.Now:HH-mm-ss}.json";
       var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
 
       if (File.Exists(filePath))
