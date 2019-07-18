@@ -95,6 +95,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -195,6 +198,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -270,6 +276,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -355,6 +364,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -398,6 +410,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -441,6 +456,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -524,6 +542,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -607,6 +628,9 @@ namespace SevnaBitcoinWallet.Tests.Commands
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
         commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (InvalidCommandArgumentFoundException ex)
       {
@@ -640,6 +664,10 @@ namespace SevnaBitcoinWallet.Tests.Commands
       try
       {
         var commandWithArgs = CommandIdentifier.FindMatchingCommandWithArguments(command, commands);
+        commandWithArgs.Should().BeNull();
+
+        // Should not get here - force a fail
+        commands.Should().BeNull();
       }
       catch (CommandNotFoundException ex)
       {
