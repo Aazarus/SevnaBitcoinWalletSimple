@@ -113,7 +113,7 @@ namespace SevnaBitcoinWallet
     /// <param name="argumentsToAdd">Arguments to check.</param>
     /// <returns>True if valid else false.</returns>
     /// <exception cref="CommandArgumentNullOrEmptyException">Null or Empty arguments were provided.</exception>
-    private static bool ConfirmArgumentsAreValid(IEnumerable<string> argumentsToAdd)
+    private static bool ConfirmArgumentsAreValid(string[] argumentsToAdd)
     {
       ConfirmArgumentCollectionNotNull(argumentsToAdd);
       ConfirmArgumentCollectionNotEmpty(argumentsToAdd);
@@ -127,6 +127,7 @@ namespace SevnaBitcoinWallet
     /// Throws exception of any of the arguments in collection are empty strings.
     /// </summary>
     /// <param name="argumentsToCheck">Arguments to check.</param>
+    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
     private static void ConfirmArgumentsNotEmpty(IEnumerable<string> argumentsToCheck)
     {
       if (argumentsToCheck.Any(argument => argument == string.Empty))
@@ -139,6 +140,7 @@ namespace SevnaBitcoinWallet
     /// Throws exception of any of the arguments in collection are null.
     /// </summary>
     /// <param name="argumentsToCheck">Arguments to check.</param>
+    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
     private static void ConfirmArgumentsNotNull(IEnumerable<string> argumentsToCheck)
     {
       if (argumentsToCheck.Any(argument => argument == null))
@@ -166,6 +168,7 @@ namespace SevnaBitcoinWallet
     /// </summary>
     /// <param name="argumentCollectionToCheck">Collection to check.</param>
     /// <exception cref="CommandArgumentNullOrEmptyException">Null collection provided.</exception>
+    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
     private static void ConfirmArgumentCollectionNotNull(IEnumerable<string> argumentCollectionToCheck)
     {
       if (argumentCollectionToCheck == null)
@@ -198,7 +201,6 @@ namespace SevnaBitcoinWallet
         }
 
         throw new CommandNotFoundException("No CommandIdentifier Available.");
-
       }
     }
 

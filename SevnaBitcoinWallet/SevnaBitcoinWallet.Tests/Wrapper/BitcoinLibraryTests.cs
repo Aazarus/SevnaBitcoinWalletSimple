@@ -7,7 +7,6 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
   using System;
   using System.IO;
   using System.Security;
-  using System.Security.Cryptography.X509Certificates;
   using FluentAssertions;
   using SevnaBitcoinWallet.Exceptions;
   using SevnaBitcoinWallet.Wrapper;
@@ -218,7 +217,6 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
 
       // Check our Chain Code exists
       fileContents.Should().Contain(expectedChainCode);
-
 
       // Cleanup
       Directory.Delete("Wallets", true);

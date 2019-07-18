@@ -4,7 +4,7 @@
 
 namespace SevnaBitcoinWallet
 {
-  using Wrapper;
+  using SevnaBitcoinWallet.Wrapper;
 
   /// <summary>
   /// App entry class.

@@ -69,16 +69,6 @@ namespace SevnaBitcoinWallet.Wrapper
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    public string ProcessShowWallet(string[] args)
-    {
-      throw new NotImplementedException();
-    }
-
-    /// <summary>
     /// Recreates a wallet based on the provided mnemonic.
     /// </summary>
     /// <param name="args">[0]"wallet-file=*Wallet file name*", [1]"mnemonic=*Comma separated mnemonic*.</param>
@@ -117,7 +107,7 @@ namespace SevnaBitcoinWallet.Wrapper
         // Because we don't know the exceptions thrown by Safe.Recover() we must rethrow.
         throw;
       }
-      catch (WalletAlreadyExistsException ex)
+      catch (WalletAlreadyExistsException)
       {
         // Because we don't know the exceptions thrown by Safe.Recover() we must rethrow.
         throw;
@@ -128,6 +118,48 @@ namespace SevnaBitcoinWallet.Wrapper
         // HBitcoin code does not help.
         // ToDo: Log
         throw new GenerateWalletFailedException("Failed to generate wallet.");
+      }
+    }
+
+    /// <summary>
+    /// Checks if a given wallet exists.
+    /// </summary>
+    /// <param name="walletFilePath">Path to wallet.</param>
+    /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
+    private static void CheckIfWalletExists(string walletFilePath)
+    {
+      if (FileHelper.CheckFileExists(walletFilePath))
+      {
+        throw new WalletAlreadyExistsException(
+          "The request to generate a wallet failed because the wallet already exists.");
+      }
+    }
+
+    /// <summary>
+    /// Confirms a given mnemonic string is valid.
+    /// </summary>
+    /// <param name="mnemonic">Mnemonic to check.</param>
+    /// <exception cref="InvalidMnemonicException">The provided mnemonic is invalid.</exception>
+    private static void ConfirmMnemonicIsValid(string mnemonic)
+    {
+      try
+      {
+        if (new Mnemonic(mnemonic).IsValidChecksum == false)
+        {
+          throw new InvalidMnemonicException("Mnemonic is invalid.");
+        }
+      }
+      catch (FormatException)
+      {
+        throw new InvalidMnemonicException("Mnemonic is invalid.");
+      }
+      catch (NotSupportedException)
+      {
+        throw new InvalidMnemonicException("Mnemonic is invalid.");
+      }
+      catch (Exception)
+      {
+        throw new InvalidMnemonicException("Mnemonic is invalid.");
       }
     }
 
@@ -177,48 +209,6 @@ namespace SevnaBitcoinWallet.Wrapper
       {
         // Log exception
         throw new GenerateWalletFailedException("Could not generate wallet 'wallet-file' argument is invalid.");
-      }
-    }
-
-    /// <summary>
-    /// Checks if a given wallet exists.
-    /// </summary>
-    /// <param name="walletFilePath">Path to wallet.</param>
-    /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
-    private static void CheckIfWalletExists(string walletFilePath)
-    {
-      if (FileHelper.CheckFileExists(walletFilePath))
-      {
-        throw new WalletAlreadyExistsException(
-          "The request to generate a wallet failed because the wallet already exists.");
-      }
-    }
-
-    /// <summary>
-    /// Confirms a given mnemonic string is valid.
-    /// </summary>
-    /// <param name="mnemonic">Mnemonic to check.</param>
-    /// <exception cref="InvalidMnemonicException">The provided mnemonic is invalid.</exception>
-    private static void ConfirmMnemonicIsValid(string mnemonic)
-    {
-      try
-      {
-        if (new Mnemonic(mnemonic).IsValidChecksum == false)
-        {
-          throw new InvalidMnemonicException("Mnemonic is invalid.");
-        }
-      }
-      catch (FormatException)
-      {
-        throw new InvalidMnemonicException("Mnemonic is invalid.");
-      }
-      catch (NotSupportedException)
-      {
-        throw new InvalidMnemonicException("Mnemonic is invalid.");
-      }
-      catch (Exception)
-      {
-        throw new InvalidMnemonicException("Mnemonic is invalid.");
       }
     }
   }

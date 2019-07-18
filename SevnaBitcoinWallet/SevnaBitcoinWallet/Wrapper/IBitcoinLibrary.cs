@@ -6,7 +6,7 @@ namespace SevnaBitcoinWallet.Wrapper
 {
   using System.Collections.Generic;
   using System.Security;
-  using Exceptions;
+  using SevnaBitcoinWallet.Exceptions;
 
   /// <summary>
   /// Defines the interface for the BitcoinLibrary.
@@ -30,13 +30,6 @@ namespace SevnaBitcoinWallet.Wrapper
     /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
     /// <exception cref="GenerateWalletFailedException">Failed to generate wallet.</exception>
     string GenerateWallet(string[] args, SecureString password);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    string ProcessShowWallet(string[] args);
 
     /// <summary>
     /// Recreates a wallet based on the provided mnemonic.
