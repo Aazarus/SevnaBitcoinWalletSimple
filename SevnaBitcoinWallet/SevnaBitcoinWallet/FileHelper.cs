@@ -20,14 +20,5 @@ namespace SevnaBitcoinWallet
     {
       return File.Exists(fileName);
     }
-
-    /// <summary>
-    /// Creates a file with a given name in the current directory.
-    /// </summary>
-    /// <param name="fileName">The name of the file to create.</param>
-    public static void CreateFile(string fileName)
-    {
-      File.Create(fileName);
-    }
   }
 }
