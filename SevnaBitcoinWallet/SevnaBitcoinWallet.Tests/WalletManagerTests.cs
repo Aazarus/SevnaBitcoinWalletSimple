@@ -9,6 +9,7 @@ namespace SevnaBitcoinWallet.Tests
   using System.IO;
   using FluentAssertions;
   using SevnaBitcoinWallet.Exceptions;
+  using SevnaBitcoinWallet.Wrapper;
   using Xunit;
 
   /// <summary>
@@ -47,7 +48,8 @@ namespace SevnaBitcoinWallet.Tests
     {
       // Arrange
       // Act
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
       walletManager.AddCommands(Args);
 
       // Assert
@@ -63,7 +65,8 @@ namespace SevnaBitcoinWallet.Tests
     public void AddCommands_ShouldAddCommandsAsDefined()
     {
       // Arrange
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
 
       // Act
       walletManager.AddCommands(Args);
@@ -79,7 +82,8 @@ namespace SevnaBitcoinWallet.Tests
     public void AddCommands_ShouldAddCommandsToEndOfCommandsCollection()
     {
       // Arrange
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
       walletManager.AddCommands(Args);
       var newCommand = new List<string>
       {
@@ -110,12 +114,46 @@ namespace SevnaBitcoinWallet.Tests
       // Act
       try
       {
-        var walletManager = new WalletManager();
+        IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+        var walletManager = new WalletManager(bitcoinLibrary);
         walletManager.AddCommands(null);
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
       }
       catch (CommandArgumentNullOrEmptyException ex)
       {
         ex.Message.Should().Contain("Argument contains null or empty values.");
+      }
+      catch (Exception ex)
+      {
+        // Should not get here
+        ex.Should().BeNull();
+      }
+    }
+
+    /// <summary>
+    /// Tests the AddCommands method throws an CommandArgumentNullOrEmptyException when empty argument collection provided.
+    /// </summary>
+    [Fact]
+    public void AddCommands_ShouldThrowExceptionForEmptyArgumentCollection()
+    {
+      // Arrange
+      // Act
+      try
+      {
+        var commands = new List<string>();
+
+        IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+        var walletManager = new WalletManager(bitcoinLibrary);
+        walletManager.AddCommands(commands.ToArray());
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
+      }
+      catch (CommandArgumentNullOrEmptyException ex)
+      {
+        ex.Message.Should().Contain("Argument collection is empty.");
       }
       catch (Exception ex)
       {
@@ -139,12 +177,17 @@ namespace SevnaBitcoinWallet.Tests
           string.Empty,
           string.Empty,
         };
-        var walletManager = new WalletManager();
+
+        IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+        var walletManager = new WalletManager(bitcoinLibrary);
         walletManager.AddCommands(commands);
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
       }
       catch (CommandArgumentNullOrEmptyException ex)
       {
-        ex.Message.Should().Contain("Argument contains null or empty values.");
+        ex.Message.Should().Contain("Received empty Argument.");
       }
       catch (Exception ex)
       {
@@ -168,12 +211,17 @@ namespace SevnaBitcoinWallet.Tests
           "show-balances",
           string.Empty,
         };
-        var walletManager = new WalletManager();
+
+        IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+        var walletManager = new WalletManager(bitcoinLibrary);
         walletManager.AddCommands(commands);
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
       }
       catch (CommandArgumentNullOrEmptyException ex)
       {
-        ex.Message.Should().Contain("Argument contains null or empty values.");
+        ex.Message.Should().Contain("Received empty Argument.");
       }
       catch (Exception ex)
       {
@@ -197,12 +245,17 @@ namespace SevnaBitcoinWallet.Tests
           "show-balances",
           null,
         };
-        var walletManager = new WalletManager();
+
+        IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+        var walletManager = new WalletManager(bitcoinLibrary);
         walletManager.AddCommands(commands);
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
       }
       catch (CommandArgumentNullOrEmptyException ex)
       {
-        ex.Message.Should().Contain("Argument contains null or empty values.");
+        ex.Message.Should().Contain("Received null Argument.");
       }
       catch (Exception ex)
       {
@@ -226,13 +279,14 @@ namespace SevnaBitcoinWallet.Tests
         "send", "btc=0.0001", "address=mq6fK8fkFyCy9p53m4Gf4fiX2XCHvcwgi1", "wallet-file=test1.json",
       };
 
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
       walletManager.AddCommands(commandsAndArgs);
 
       var currentCommandCount = walletManager.Commands.Count;
 
       // Act
-      var result = walletManager.ProcessNextCommand();
+      walletManager.ProcessNextCommand();
 
       // Assert
       walletManager.Commands.Count.Should().NotBe(currentCommandCount);
@@ -246,7 +300,6 @@ namespace SevnaBitcoinWallet.Tests
     public void ProcessNextCommand_ShouldReturnTheMnemonicForProcessingGenerateNewWalletCommand()
     {
       // Arrange
-
       string[] commandsAndArgs =
       {
         "generate-wallet", "wallet-file=BitcoinWallet.json",
@@ -255,7 +308,8 @@ namespace SevnaBitcoinWallet.Tests
         "send", "btc=0.0001", "address=mq6fK8fkFyCy9p53m4Gf4fiX2XCHvcwgi1", "wallet-file=test1.json",
       };
 
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
       walletManager.AddCommands(commandsAndArgs);
 
       // Act
@@ -266,24 +320,53 @@ namespace SevnaBitcoinWallet.Tests
     }
 
     /// <summary>
+    /// Tests the ProcessNextCommand method throws an exception if no commands are available.
+    /// </summary>
+    [Fact]
+    public void ProcessNextCommand_ShouldThrowExceptionIfNoCommandsAvailable()
+    {
+      // Arrange
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
+
+      // Act
+      try
+      {
+        walletManager.ProcessNextCommand();
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
+      }
+      catch (CommandNotFoundException ex)
+      {
+        // Assert
+        ex.Message.Should().Be("No CommandIdentifier Available.");
+      }
+    }
+
+    /// <summary>
     /// Tests the ProcessCommands method throws CommandNotFoundException when no commands are available.
     /// </summary>
     [Fact]
     public void ProcessCommands_ShouldThrowCustomExceptionWhenNoCommandsAvailable()
     {
       // Arrange
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
       walletManager.Commands.Should().BeEmpty();
 
       // Act
       try
       {
-        var result = walletManager.ProcessCommands();
+        walletManager.ProcessCommands();
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
       }
       catch (CommandNotFoundException ex)
       {
         // Assert
-        ex.Message.Should().Be("No CommandIdentifier found.");
+        ex.Message.Should().Be("No CommandIdentifier Available.");
       }
       catch (Exception ex)
       {
@@ -299,12 +382,16 @@ namespace SevnaBitcoinWallet.Tests
     public void ProcessCommands_ShouldThrowCustomExceptionWhenCommandNotAvailable()
     {
       // Arrange
-      var walletManager = new WalletManager();
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+      var walletManager = new WalletManager(bitcoinLibrary);
 
       // Act
       try
       {
-        var result = walletManager.ProcessCommands();
+        walletManager.ProcessCommands();
+
+        // Should not get here - Force a fail if we do
+        walletManager.Should().BeNull();
       }
       catch (CommandNotFoundException ex)
       {

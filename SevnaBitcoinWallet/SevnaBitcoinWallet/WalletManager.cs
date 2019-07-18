@@ -25,11 +25,18 @@ namespace SevnaBitcoinWallet
     /// <summary>
     /// Initializes a new instance of the <see cref="WalletManager"/> class.
     /// </summary>
-    public WalletManager()
+    /// <param name="bitcoinLibrary">BitcoinLibrary to use.</param>
+    public WalletManager(IBitcoinLibrary bitcoinLibrary)
     {
+      this.BitcoinLibrary = bitcoinLibrary;
       this.Commands = new List<string>();
       Configuration.Load();
     }
+
+    /// <summary>
+    /// Gets or sets the BitcoinLibrary.
+    /// </summary>
+    public IBitcoinLibrary BitcoinLibrary { get; set; }
 
     /// <summary>
     /// Gets the number of commands to process.
@@ -85,16 +92,17 @@ namespace SevnaBitcoinWallet
     /// <exception cref="CommandNotFoundException">Command not found for index.</exception>
     public string ProcessNextCommand()
     {
-      if (this.Commands.Count == 0)
+      var result = string.Empty;
+
+      if (this.CanContinueToProcessCommands())
       {
-        throw new CommandNotFoundException("No CommandIdentifier Available.");
+        var nextCommandToProcess = this.GetNextCommandToProcess();
+        var commandWithArguments =
+          CommandIdentifier.FindMatchingCommandWithArguments(nextCommandToProcess, this.Commands);
+
+        result = this.BitcoinLibrary.ProcessCommand(commandWithArguments);
+        this.CleanUpPostCommandProcess(commandWithArguments);
       }
-
-      var nextCommandToProcess = this.GetNextCommandToProcess();
-      var commandWithArguments = CommandIdentifier.FindMatchingCommandWithArguments(nextCommandToProcess, this.Commands);
-
-      var result = BitcoinLibrary.ProcessCommand(commandWithArguments);
-      this.CleanUpPostCommandProcess(commandWithArguments);
 
       return result;
     }
@@ -107,19 +115,63 @@ namespace SevnaBitcoinWallet
     /// <exception cref="CommandArgumentNullOrEmptyException">Null or Empty arguments were provided.</exception>
     private static bool ConfirmArgumentsAreValid(IEnumerable<string> argumentsToAdd)
     {
-      if (argumentsToAdd == null)
-      {
-        throw new CommandArgumentNullOrEmptyException("Argument contains null or empty values.");
-      }
-
-      var argumentsAsList = argumentsToAdd.ToList();
-      argumentsAsList.Find(string.IsNullOrEmpty);
-      if (argumentsAsList.Count == 0)
-      {
-        throw new CommandArgumentNullOrEmptyException("Argument contains null or empty values.");
-      }
+      ConfirmArgumentCollectionNotNull(argumentsToAdd);
+      ConfirmArgumentCollectionNotEmpty(argumentsToAdd);
+      ConfirmArgumentsNotEmpty(argumentsToAdd);
+      ConfirmArgumentsNotNull(argumentsToAdd);
 
       return true;
+    }
+
+    /// <summary>
+    /// Throws exception of any of the arguments in collection are empty strings.
+    /// </summary>
+    /// <param name="argumentsToCheck">Arguments to check.</param>
+    private static void ConfirmArgumentsNotEmpty(IEnumerable<string> argumentsToCheck)
+    {
+      if (argumentsToCheck.Any(argument => argument == string.Empty))
+      {
+        throw new CommandArgumentNullOrEmptyException("Received empty Argument.");
+      }
+    }
+
+    /// <summary>
+    /// Throws exception of any of the arguments in collection are null.
+    /// </summary>
+    /// <param name="argumentsToCheck">Arguments to check.</param>
+    private static void ConfirmArgumentsNotNull(IEnumerable<string> argumentsToCheck)
+    {
+      if (argumentsToCheck.Any(argument => argument == null))
+      {
+        throw new CommandArgumentNullOrEmptyException("Received null Argument.");
+      }
+    }
+
+    /// <summary>
+    /// Throws exception if argument collection is empty.
+    /// </summary>
+    /// <param name="argumentCollectionToCheck">Collection to check.</param>
+    /// <exception cref="CommandArgumentNullOrEmptyException">Empty collection provided.</exception>
+    private static void ConfirmArgumentCollectionNotEmpty(IEnumerable<string> argumentCollectionToCheck)
+    {
+      var argumentsAsList = argumentCollectionToCheck.ToList();
+      if (argumentsAsList.Count == 0)
+      {
+        throw new CommandArgumentNullOrEmptyException("Argument collection is empty.");
+      }
+    }
+
+    /// <summary>
+    /// Throws exception if argument collection is null.
+    /// </summary>
+    /// <param name="argumentCollectionToCheck">Collection to check.</param>
+    /// <exception cref="CommandArgumentNullOrEmptyException">Null collection provided.</exception>
+    private static void ConfirmArgumentCollectionNotNull(IEnumerable<string> argumentCollectionToCheck)
+    {
+      if (argumentCollectionToCheck == null)
+      {
+        throw new CommandArgumentNullOrEmptyException("Argument contains null or empty values.");
+      }
     }
 
     /// <summary>
@@ -140,7 +192,13 @@ namespace SevnaBitcoinWallet
     {
       lock (this.threadLock)
       {
-        return this.Commands.Count > 0;
+        if (this.Commands.Count > 0)
+        {
+          return true;
+        }
+
+        throw new CommandNotFoundException("No CommandIdentifier Available.");
+
       }
     }
 
