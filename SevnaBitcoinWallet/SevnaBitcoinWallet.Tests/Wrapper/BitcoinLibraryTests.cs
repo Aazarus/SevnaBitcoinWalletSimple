@@ -7,6 +7,7 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
   using System;
   using System.IO;
   using System.Security;
+  using System.Security.Cryptography.X509Certificates;
   using FluentAssertions;
   using SevnaBitcoinWallet.Exceptions;
   using SevnaBitcoinWallet.Wrapper;
@@ -54,9 +55,10 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
       password.AppendChar('o');
       password.AppendChar('r');
       password.AppendChar('d');
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
 
       // Act
-      var mnemonic = BitcoinLibrary.GenerateWallet(args, password);
+      var mnemonic = bitcoinLibrary.GenerateWallet(args, password);
 
       // Assert
       mnemonic.Should().NotBeNull();
@@ -75,8 +77,10 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
     public void ProcessGenerateWallet_ShouldThrowAnExceptionIfWalletAlreadyExists()
     {
       // Arrange
+      const string walletDirectory = "Wallets";
+      Directory.CreateDirectory(walletDirectory);
       const string walletFileName = "wallet_generate_test.json";
-      using (File.Create(walletFileName))
+      using (File.Create(Path.Combine(walletDirectory, walletFileName)))
       {
       }
 
@@ -94,15 +98,20 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
       password.AppendChar('r');
       password.AppendChar('d');
 
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
       try
       {
         // Act
-        BitcoinLibrary.GenerateWallet(args, password);
+        bitcoinLibrary.GenerateWallet(args, password);
+
+        // Should not get here - Force a fail if we do
+        bitcoinLibrary.Should().BeNull();
       }
       catch (WalletAlreadyExistsException ex)
       {
         // Assert
-        ex.Message.Should().Be("The request to generate a new wallet failed because the wallet already exists.");
+        ex.Message.Should().Be("The request to generate a wallet failed because the wallet already exists.");
       }
       catch (Exception ex)
       {
@@ -124,7 +133,7 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
       // Arrange
       var args = new[]
       {
-        "wallet-file=",
+        "wallet-fi=", // Invalid spelling of 'wallet-file'
       };
       var password = new SecureString();
       password.AppendChar('p');
@@ -136,10 +145,15 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
       password.AppendChar('r');
       password.AppendChar('d');
 
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
       try
       {
         // Act
-        BitcoinLibrary.GenerateWallet(args, password);
+        bitcoinLibrary.GenerateWallet(args, password);
+
+        // Should not get here - Force a fail if we do
+        bitcoinLibrary.Should().BeNull();
       }
       catch (GenerateWalletFailedException ex)
       {
@@ -157,15 +171,163 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
     }
 
     /// <summary>
+    /// Tests the ProcessRecoverWallet correctly recovers a wallet using the given mnemonic.
+    /// </summary>
+    [Fact]
+    public void ProcessRecoverWallet_ShouldRecoverAWalletWhenGivenValidArguments()
+    {
+      // Arrange
+      const string walletFileName = "wallet_recover_test.json";
+      const string mnemonic = "dash destroy twelve twice labor patch embrace embody chronic inch install term";
+      var args = new[]
+      {
+        $"wallet-file={walletFileName}",
+        $"mnemonic={mnemonic}",
+      };
+      var password = new SecureString();
+      password.AppendChar('p');
+      password.AppendChar('a');
+      password.AppendChar('s');
+      password.AppendChar('s');
+      password.AppendChar('w');
+      password.AppendChar('o');
+      password.AppendChar('r');
+      password.AppendChar('d');
+
+      const string expectedEncryptedSeed = "6PYM714zxNRpmx7WRaCLNJyAreYx2BU5GkbCx5jF5QQNKeZExYqrNHzK8L";
+      const string expectedChainCode = "CarQU+owbi2iML7Fy5vf+6O0Lpc/V//NFkk7WLVkh70=";
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
+      // Act
+      var recoveredWalletLocation = string.Empty;
+      try
+      {
+        recoveredWalletLocation = bitcoinLibrary.ProcessRecoverWallet(args, password);
+      }
+      catch (Exception ex)
+      {
+        ex.Should().BeNull();
+      }
+
+      // Assert
+      File.Exists(recoveredWalletLocation).Should().BeTrue();
+      var fileContents = File.ReadAllText(recoveredWalletLocation);
+
+      // Check our Encrypted Seed exists
+      fileContents.Should().Contain(expectedEncryptedSeed);
+
+      // Check our Chain Code exists
+      fileContents.Should().Contain(expectedChainCode);
+
+
+      // Cleanup
+      Directory.Delete("Wallets", true);
+      File.Delete(walletFileName);
+    }
+
+    /// <summary>
+    /// Tests the ProcessRecoverWallet throws a custom exception if the wallet to generate already exists
+    /// by wallet name.
+    /// </summary>
+    [Fact]
+    public void ProcessRecoverWallet_ShouldThrowCustomExceptionIfWalletExists()
+    {
+      // Arrange
+      const string walletDirectoryName = "Wallets";
+      const string walletFileName = "wallet_recover_exists_test.json";
+
+      Directory.CreateDirectory(walletDirectoryName);
+      using (File.Create(Path.Combine(walletDirectoryName, walletFileName)))
+      {
+      }
+
+      const string mnemonic = "dash,destroy,twelve,twice,labor,patch,embrace,embody,chronic,inch,install,term";
+      var args = new[]
+      {
+        $"wallet-file={walletFileName}",
+        $"mnemonic={mnemonic}",
+      };
+      var password = new SecureString();
+      password.AppendChar('p');
+      password.AppendChar('a');
+      password.AppendChar('s');
+      password.AppendChar('s');
+      password.AppendChar('w');
+      password.AppendChar('o');
+      password.AppendChar('r');
+      password.AppendChar('d');
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
+      try
+      {
+        // Act
+        bitcoinLibrary.ProcessRecoverWallet(args, password);
+
+        // Should not get here - force a fail if we do
+        bitcoinLibrary.Should().BeNull();
+      }
+      catch (WalletAlreadyExistsException ex)
+      {
+        // Assert
+        ex.Message.Should().Be("The request to generate a wallet failed because the wallet already exists.");
+      }
+
+      // Cleanup
+      Directory.Delete(walletDirectoryName, true);
+      File.Delete(walletFileName);
+    }
+
+    /// <summary>
+    /// Tests the ProcessRecoverWallet throws an InvalidMnemonicException on an invalid Mnemonic.
+    /// </summary>
+    [Fact]
+    public void ProcessRecoverWallet_ShouldThrowCustomExceptionOnInvalidMnemonic()
+    {
+      // Arrange
+      const string walletFileName = "wallet_recover_invalid_mnemonic_test.json";
+
+      var args = new[]
+      {
+        $"wallet-file={walletFileName}",
+        "mnemonic=InvalidMnemonic",
+      };
+      var password = new SecureString();
+      password.AppendChar('p');
+      password.AppendChar('a');
+      password.AppendChar('s');
+      password.AppendChar('s');
+      password.AppendChar('w');
+      password.AppendChar('o');
+      password.AppendChar('r');
+      password.AppendChar('d');
+
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
+      try
+      {
+        // Act
+        bitcoinLibrary.ProcessRecoverWallet(args, password);
+
+        // Should not get here - force a fail if we do
+        bitcoinLibrary.Should().BeNull();
+      }
+      catch (InvalidMnemonicException ex)
+      {
+        // Assert
+        ex.Message.Should().Be("Mnemonic is invalid.");
+      }
+    }
+
+    /// <summary>
     /// Tests the ProcessShowHistory method correctly processes a valid Wallet File for address details.
     /// </summary>
     [Fact]
-    public void ProcessShowHistory_ShouldReturnTheDetailsOfAnAddressWhenGivenValidWalletFile()
+    public void ProcessShowHistory_ShouldReturnTheDetailsOfAWalletWhenGivenValidWalletFile()
     {
       // Arrange
 
       // Act
-      
+
       // Assert
       Assert.True(false);
     }
