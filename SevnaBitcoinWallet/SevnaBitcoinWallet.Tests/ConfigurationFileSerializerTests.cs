@@ -114,8 +114,8 @@ namespace SevnaBitcoinWallet.Tests
       {
         ConfigurationFileSerializer.Deserialize(filePath);
 
-        // Should not get here.
-        File.Exists(filePath).Should().BeFalse();
+        // Should not get here - force a fail.
+        fileName.Should().BeEmpty();
       }
       catch (FileNotFoundException ex)
       {
