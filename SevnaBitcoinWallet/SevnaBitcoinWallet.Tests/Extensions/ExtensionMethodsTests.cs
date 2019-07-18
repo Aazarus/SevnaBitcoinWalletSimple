@@ -81,6 +81,9 @@ namespace SevnaBitcoinWallet.Tests.Extensions
       {
         // Act
         network.GetNetworkFromString(networkAsString);
+
+        // Should not get here - Force a fail if we do
+        network.Should().BeNull();
       }
       catch (NetworkNoMatchException ex)
       {
@@ -91,6 +94,67 @@ namespace SevnaBitcoinWallet.Tests.Extensions
       {
         // Should not get here.
         ex.Should().BeNull();
+      }
+    }
+
+    /// <summary>
+    /// Tests the GetConnectionTypeFromString extension method returns ConnectionType.FullNode when given
+    /// "fullnode".
+    /// </summary>
+    [Fact]
+    public void GetConnectionTypeFromString_ShouldReturnFullNodeWhenGivenCorrespondingString()
+    {
+      // Assign
+      var testConnectionType = ConnectionType.Http;
+      const string connectionTypeAsString = "fullnode";
+
+      // Act
+      testConnectionType = testConnectionType.GetConnectionTypeFromString(connectionTypeAsString);
+
+      // Assert
+      testConnectionType.Should().BeEquivalentTo(ConnectionType.FullNode);
+    }
+
+    /// <summary>
+    /// Tests the GetConnectionTypeFromString extension method returns ConnectionType.Http when given
+    /// "http".
+    /// </summary>
+    [Fact]
+    public void GetConnectionTypeFromString_ShouldReturnHttpWhenGivenCorrespondingString()
+    {
+      // Assign
+      var testConnectionType = ConnectionType.FullNode;
+      const string connectionTypeAsString = "http";
+
+      // Act
+      testConnectionType = testConnectionType.GetConnectionTypeFromString(connectionTypeAsString);
+
+      // Assert
+      testConnectionType.Should().BeEquivalentTo(ConnectionType.Http);
+    }
+
+    /// <summary>
+    /// Tests the GetConnectionTypeFromString extension method throws ConnectionTypeNoMatchException
+    /// when unknown ConnectionType passed.
+    /// </summary>
+    [Fact]
+    public void GetConnectionTypeFromString_ShouldThrowCustomExceptionWhenUnknownConnectionTypeProvided()
+    {
+      // Assign
+      var testConnectionType = ConnectionType.FullNode;
+      const string connectionTypeAsString = "unknown";
+
+      // Act
+      try
+      {
+        testConnectionType = testConnectionType.GetConnectionTypeFromString(connectionTypeAsString);
+
+        // Should not get here - Force a fail if we do
+        testConnectionType.Should().BeNull();
+      }
+      catch (ConnectionTypeNoMatchException ex)
+      {
+        ex.Message.Should().Contain("No match found for provided string representation of ConnectionType:");
       }
     }
   }
