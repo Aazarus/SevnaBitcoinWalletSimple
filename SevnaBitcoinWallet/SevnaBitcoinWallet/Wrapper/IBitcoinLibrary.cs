@@ -40,5 +40,12 @@ namespace SevnaBitcoinWallet.Wrapper
     /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
     /// <exception cref="GenerateWalletFailedException">Failed to generate wallet.</exception>
     string ProcessRecoverWallet(string[] args, SecureString password);
+
+    /// <summary>
+    /// Provides the balances for a wallet.
+    /// </summary>
+    /// <param name="args">Wallet to check</param>
+    /// <returns>Wallet balances.</returns>
+    string ShowBalances(string[] args);
   }
 }
