@@ -45,7 +45,11 @@ namespace SevnaBitcoinWallet.Wrapper
     /// Provides the balances for a wallet.
     /// </summary>
     /// <param name="args">Wallet to check</param>
+    /// <param name="password">SecureString password.</param>
     /// <returns>Wallet balances.</returns>
-    string ShowBalances(string[] args);
+    /// <exception cref="WalletNotFoundException">The request Wallet was not found.</exception>
+    /// <exception cref="IncorrectWalletPasswordException">Provided password is incorrect.</exception>
+    /// <exception cref="WalletDecryptionFailedException">Failed to decrypt wallet.</exception>
+    string ShowBalances(string[] args, SecureString password);
   }
 }
