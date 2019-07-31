@@ -317,17 +317,150 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
     }
 
     /// <summary>
-    /// Tests the ProcessShowHistory method correctly processes a valid Wallet File for address details.
+    /// Tests the ProcessShowBalances method returns the correct balance for a given wallet.
     /// </summary>
     [Fact]
-    public void ProcessShowHistory_ShouldReturnTheDetailsOfAWalletWhenGivenValidWalletFile()
+    public void ProcessShowBalances_ShouldReturnBalanceForAGivenWallet()
     {
       // Arrange
+      const string walletContents = "{ \"EncryptedSeed\": \"6PYM714zxNRpmx7WRaCLNJyAreYx2BU5GkbCx5jF5QQNKeZExYqrNHzK8L\",\"ChainCode\": \"CarQU+owbi2iML7Fy5vf+6O0Lpc/V//NFkk7WLVkh70=\",\"Network\": \"Main\",\"CreationTime\": \"2019-07-18\"}";
 
-      // Act
+      const string walletDirectoryName = "Wallets";
+      const string walletFileName = "wallet_show_balances_test.json";
+      var walletFilePath = Path.Combine(walletDirectoryName, walletFileName);
 
-      // Assert
-      Assert.True(false);
+      Directory.CreateDirectory(walletDirectoryName);
+      using (File.Create(walletFilePath))
+      {
+      }
+
+      File.WriteAllText(walletFilePath, walletContents);
+      File.Exists(walletFilePath).Should().BeTrue();
+
+      var args = new[]
+      {
+        $"wallet-file={walletFileName}",
+      };
+
+      var password = new SecureString();
+      password.AppendChar('p');
+      password.AppendChar('a');
+      password.AppendChar('s');
+      password.AppendChar('s');
+      password.AppendChar('w');
+      password.AppendChar('o');
+      password.AppendChar('r');
+      password.AppendChar('d');
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
+      try
+      {
+        // Act
+        var result = bitcoinLibrary.ShowBalances(args, password);
+
+        // Should not get here - force a fail if we do
+        result.Should().NotBeNull();
+      }
+      catch (IncorrectWalletPasswordException ex)
+      {
+        // Assert
+        ex.Message.Should().Contain("Provided password is incorrect.");
+      }
+
+      password.Should().NotBeNull();
+
+      // Clean up
+      Directory.Delete(walletDirectoryName, true);
+      File.Delete(walletFileName);
+    }
+
+    /// <summary>
+    /// Tests the ProcessShowBalances method throws an IncorrectWalletPasswordException.
+    /// </summary>
+    [Fact]
+    public void ProcessShowBalances_ShouldThrowCustomExceptionForAnIncorrectPassword()
+    {
+      // Arrange
+      const string walletContents = "{ \"EncryptedSeed\": \"6PYM714zxNRpmx7WRaCLNJyAreYx2BU5GkbCx5jF5QQNKeZExYqrNHzK8L\",\"ChainCode\": \"CarQU+owbi2iML7Fy5vf+6O0Lpc/V//NFkk7WLVkh70=\",\"Network\": \"Main\",\"CreationTime\": \"2019-07-18\"}";
+
+      const string walletDirectoryName = "Wallets";
+      const string walletFileName = "wallet_show_balances_test.json";
+      var walletFilePath = Path.Combine(walletDirectoryName, walletFileName);
+
+      Directory.CreateDirectory(walletDirectoryName);
+      using (File.Create(walletFilePath))
+      {
+      }
+
+      var args = new[]
+      {
+        $"wallet-file={walletFileName}",
+      };
+
+      File.WriteAllText(walletFilePath, walletContents);
+      File.Exists(walletFilePath).Should().BeTrue();
+
+      var password = new SecureString(); // Incorrect password.
+      password.AppendChar('p');
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
+      try
+      {
+        // Act
+        bitcoinLibrary.ShowBalances(args, password);
+
+        // Should not get here - force a fail if we do
+        bitcoinLibrary.Should().BeNull();
+      }
+      catch (IncorrectWalletPasswordException ex)
+      {
+        // Assert
+        ex.Message.Should().Contain("Provided password is incorrect.");
+      }
+
+      // Clean up
+      Directory.Delete(walletDirectoryName, true);
+      File.Delete(walletFileName);
+    }
+
+    /// <summary>
+    /// Tests the ProcessShowBalances method throws a custom exception when a given wallet is missing.
+    /// </summary>
+    [Fact]
+    public void ProcessShowBalances_ShouldThrowACustomExceptionWhenAGivenWalletIsMissing()
+    {
+      // Arrange
+      const string walletFileName = "wallet_show_balances_test.json";
+
+      var args = new[]
+      {
+        $"wallet-file={walletFileName}",
+      };
+
+      var password = new SecureString();
+      password.AppendChar('p');
+      password.AppendChar('a');
+      password.AppendChar('s');
+      password.AppendChar('s');
+      password.AppendChar('w');
+      password.AppendChar('o');
+      password.AppendChar('r');
+      password.AppendChar('d');
+      IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
+
+      try
+      {
+        // Act
+        bitcoinLibrary.ShowBalances(args, password);
+
+        // Should not get here - force a fail if we do
+        bitcoinLibrary.Should().BeNull();
+      }
+      catch (WalletNotFoundException ex)
+      {
+        // Assert
+        ex.Message.Should().Contain("Wallet not found: ");
+      }
     }
   }
 }
