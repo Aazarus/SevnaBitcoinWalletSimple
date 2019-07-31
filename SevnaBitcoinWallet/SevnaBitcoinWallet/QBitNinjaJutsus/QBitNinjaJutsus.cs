@@ -1,5 +1,7 @@
-﻿#pragma warning disable SA1200 // Using directives should be placed correctly
+﻿#pragma warning disable SA1633 // File should have header
+#pragma warning disable SA1200 // Using directives should be placed correctly
 using System.Collections.Generic;
+#pragma warning restore SA1633 // File should have header
 using System.Linq;
 using HBitcoin.KeyManagement;
 using NBitcoin;
