@@ -171,10 +171,10 @@ namespace SevnaBitcoinWallet.Wrapper
     }
 
     /// <summary>
-    /// 
+    /// Calculates the confirmed and unconfirmed balance for a collection of addresses.
     /// </summary>
-    /// <param name="addressHistoryRecordsPerAddress"></param>
-    /// <returns></returns>
+    /// <param name="addressHistoryRecordsPerAddress">Collection of addresses.</param>
+    /// <returns>A String containing each Address and it's Confirmed and Unconfirmed balance.</returns>
     private static string CalculateAddressBalances(Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>> addressHistoryRecordsPerAddress)
     {
       string balances = string.Empty;
@@ -210,13 +210,13 @@ namespace SevnaBitcoinWallet.Wrapper
     }
 
     /// <summary>
-    /// 
+    /// Groups all corresponding history records to a bitcoin address.
     /// </summary>
-    /// <param name="operationPerAddresses"></param>
-    /// <param name="addressHistoryRecords"></param>
-    /// <returns></returns>
+    /// <param name="operationPerAddresses">Bitcoin addresses.</param>
+    /// <param name="addressHistoryRecords">History records.</param>
+    /// <returns>A dictionary of BitcoinAddresses and the corresponding history records.</returns>
     private static Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>> GroupAllHistoryRecordsByAddresses(
-      Dictionary<BitcoinAddress, List<BalanceOperation>> operationPerAddresses, 
+      Dictionary<BitcoinAddress, List<BalanceOperation>> operationPerAddresses,
       List<AddressHistoryRecord> addressHistoryRecords)
     {
       var addressHistoryRecordsPerAddress = new Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>>();
