@@ -6,7 +6,8 @@ namespace SevnaBitcoinWallet.Tests
 {
   using System;
   using System.IO;
-  using FluentAssertions;
+    using System.Threading;
+    using FluentAssertions;
   using NBitcoin;
   using Xunit;
 
@@ -21,6 +22,8 @@ namespace SevnaBitcoinWallet.Tests
     [Fact]
     public void Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent()
     {
+      Thread.Sleep(1000); // This delay is to avoid conflicts with the file access. Needs reviewing and improving.
+
       // Arrange
       var fileName = $"Serialize_ShouldCreateADefaultJsonFileWhenNoParametersSent_{DateTime.Now:HH-mm-ss}.json";
       var filePath = Path.Combine(Environment.CurrentDirectory, fileName);

@@ -6,7 +6,8 @@ namespace SevnaBitcoinWallet.Tests
 {
   using System;
   using System.IO;
-  using FluentAssertions;
+    using System.Threading;
+    using FluentAssertions;
   using NBitcoin;
   using Xunit;
 
@@ -21,6 +22,8 @@ namespace SevnaBitcoinWallet.Tests
     [Fact]
     public void Save_CorrectlySerializesInformationToFile()
     {
+      Thread.Sleep(1000); // This delay is to avoid conflicts with the file access. Needs reviewing and improving.
+
       // Arrange
       var fileName = $"Save_CorrectlySerializesInformationToFile{DateTime.Now:HH-mm-ss}.json";
       var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
@@ -52,6 +55,8 @@ namespace SevnaBitcoinWallet.Tests
     [Fact]
     public void Load_CorrectlyLoadsConfigurationDataFromFileWithDefaults()
     {
+      Thread.Sleep(1000); // This delay is to avoid conflicts with the file access. Needs reviewing and improving.
+
       // Arrange
       const string fileName = "Load_CorrectlyLoadsConfigurationDataFromFile.json";
       var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
