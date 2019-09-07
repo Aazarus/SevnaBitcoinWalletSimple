@@ -6,7 +6,8 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
 {
   using System;
   using System.IO;
-  using System.Security;
+    using System.Linq;
+    using System.Security;
   using FluentAssertions;
   using SevnaBitcoinWallet.Exceptions;
   using SevnaBitcoinWallet.Wrapper;
@@ -353,21 +354,20 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
       password.AppendChar('d');
       IBitcoinLibrary bitcoinLibrary = new BitcoinLibrary();
 
+      var expectedResult = "Address Key - 12aTk1fcxq2Sa8xpwDyRWVK6pg8RfDzp51:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1An8cCNwNKkZExStUdtuav5XoUPnFTeS32:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 17vghiDiZYcpFDgT7FL7wf9NiqFiGyaiWU:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1AZ8mMSmfwyt6RoKU8VvzodbaW7QaTgPL3:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1Prgw1SJF53Qcgmn2YQ4F8suZN9wPZnU7y:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1JU6L1iKYqgEdBdqfGQ4vx1DD2DRq84Hg7:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1HLzcWeRRF8dGitVpwVHw2VRr7jzPr1Fdy:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1BeVydLDbof2jv6upkwm1HdcgDjfUbWo9s:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1AP64gCEBt1MHtXdAFKwcaEpBKaWAm2Yhb:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 16DsRYBAVukyC45bWvRki83yTx3djztScq:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 16QWEMqjXTaPkxBPtQP8CHvQm7D2q9jc5m:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1EhYAoGP9gbA5tVi7dNqi5vHRCrgzZgnU:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 18vwHHkvGGBh2SaeniWKUf9PLo7kRim9XQ:  Confirmed Balance: 0.  Unconfirmed Balance: 0! Address Key - 1BiutrFMyx7H8kLBAJAXLduNEWQTnTJ3Ca:  Confirmed Balance: 0.  Unconfirmed Balance: 0! ";
+
       try
       {
         // Act
         var result = bitcoinLibrary.ShowBalances(args, password);
 
-        // Should not get here - force a fail if we do
-        result.Should().NotBeNull();
+        result.Should().Be(expectedResult);
       }
       catch (IncorrectWalletPasswordException ex)
       {
         // Assert
         ex.Message.Should().Contain("Provided password is incorrect.");
       }
-
-      password.Should().NotBeNull();
 
       // Clean up
       Directory.Delete(walletDirectoryName, true);
