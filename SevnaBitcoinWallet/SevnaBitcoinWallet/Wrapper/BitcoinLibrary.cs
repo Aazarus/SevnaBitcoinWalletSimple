@@ -261,19 +261,19 @@ namespace SevnaBitcoinWallet.Wrapper
     /// Checks if a given wallet exists and throws an exception based on whether it should or not.
     /// </summary>
     /// <param name="walletFilePath">Path to wallet.</param>
-    /// <param name="ShouldWalletExist">Should the wallet exist.</param>
+    /// <param name="shouldWalletExist">Should the wallet exist.</param>
     /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
     /// <exception cref="WalletNotFoundException">The request Wallet was not found.</exception>
-    private static void CheckIfWalletExists(string walletFilePath, bool ShouldWalletExist = false)
+    private static void CheckIfWalletExists(string walletFilePath, bool shouldWalletExist = false)
     {
       bool walletExists = FileHelper.CheckFileExists(walletFilePath);
-      if (walletExists && ShouldWalletExist == false)
+      if (walletExists && shouldWalletExist == false)
       {
         throw new WalletAlreadyExistsException(
           "The request to generate a wallet failed because the wallet already exists.");
       }
 
-      if (!walletExists && ShouldWalletExist == true)
+      if (!walletExists && shouldWalletExist == true)
       {
         throw new WalletNotFoundException($"Wallet not found: {walletFilePath}");
       }
