@@ -1,10 +1,13 @@
 ﻿#pragma warning disable SA1200 // Using directives should be placed correctly
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using NBitcoin;
 using QBitNinja.Client.Models;
+
+[assembly: SuppressMessage("CSharp.DocumentationRules", "*", Scope = "Namespace", Target = "StyleCopSample.Test", Justification = "3rd party code.")]
 
 namespace DotNetWallet.QBitNinjaJutsus
 {

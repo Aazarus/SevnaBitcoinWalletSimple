@@ -1,6 +1,9 @@
 ﻿#pragma warning disable SA1633 // File should have header
 #pragma warning disable SA1200 // Using directives should be placed correctly
+#pragma warning disable SA1028 // Code should not contain trailing whitespace
 using System.Collections.Generic;
+#pragma warning restore SA1633 // File should have header
+using System.Diagnostics.CodeAnalysis;
 #pragma warning restore SA1633 // File should have header
 using System.Linq;
 using HBitcoin.KeyManagement;
@@ -9,6 +12,8 @@ using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using SevnaBitcoinWallet;
 using static System.Console;
+
+[assembly: SuppressMessage("CSharp.DocumentationRules", "*", Scope = "Namespace", Target = "StyleCopSample.Test", Justification = "3rd party code.")]
 
 #pragma warning restore SA1200 // Using directives should be placed correctly
 #pragma warning disable SA1520 // Use braces consistently
@@ -186,3 +191,4 @@ namespace DotNetWallet.QBitNinjaJutsus
 #pragma warning restore SA1600 // Elements should be documented
 #pragma warning restore SA1520 // Use braces consistently
 #pragma warning restore SA1606 // Element documentation should have summary text
+#pragma warning restore SA1028 // Code should not contain trailing whitespace
