@@ -6,8 +6,7 @@ namespace SevnaBitcoinWallet.Tests.Wrapper
 {
   using System;
   using System.IO;
-    using System.Linq;
-    using System.Security;
+  using System.Security;
   using FluentAssertions;
   using SevnaBitcoinWallet.Exceptions;
   using SevnaBitcoinWallet.Wrapper;

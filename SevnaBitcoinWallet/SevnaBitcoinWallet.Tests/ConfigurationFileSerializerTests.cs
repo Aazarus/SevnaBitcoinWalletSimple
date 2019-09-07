@@ -6,8 +6,8 @@ namespace SevnaBitcoinWallet.Tests
 {
   using System;
   using System.IO;
-    using System.Threading;
-    using FluentAssertions;
+  using System.Threading;
+  using FluentAssertions;
   using NBitcoin;
   using Xunit;
 
