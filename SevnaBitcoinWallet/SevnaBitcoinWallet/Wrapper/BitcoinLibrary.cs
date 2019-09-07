@@ -9,13 +9,16 @@ namespace SevnaBitcoinWallet.Wrapper
   using System.IO;
   using System.Linq;
   using System.Security;
+  using DotNetWallet.QBitNinjaJutsus;
   using HBitcoin.KeyManagement;
   using NBitcoin;
+  using QBitNinja.Client.Models;
   using SevnaBitcoinWallet.Exceptions;
+  using static DotNetWallet.QBitNinjaJutsus.QBitNinjaJutsus;
 
   /// <summary>
   /// The following class adds a layer of abstraction between SevnaBitcoinWallet
-  /// and the in use 3rd party Bitcoin Library.
+  /// and the in use 3rd party Bitcoin Libraries, NBitcoin and HBitcoin.
   /// </summary>
   // ToDo: BitcoinLibrary should be an interface, with the concrete implementation injected into clients.
   public class BitcoinLibrary : IBitcoinLibrary
@@ -72,7 +75,7 @@ namespace SevnaBitcoinWallet.Wrapper
     /// Recreates a wallet based on the provided mnemonic.
     /// </summary>
     /// <param name="args">[0]"wallet-file=*Wallet file name*", [1]"mnemonic=*Comma separated mnemonic*.</param>
-    /// <param name="password">SecureString password.</param>
+    /// <param name="password">Wallet password.</param>
     /// <returns>Location of generated wallet.</returns>
     /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
     /// <exception cref="GenerateWalletFailedException">Failed to generate wallet.</exception>
@@ -122,16 +125,157 @@ namespace SevnaBitcoinWallet.Wrapper
     }
 
     /// <summary>
-    /// Checks if a given wallet exists.
+    /// Provides the balances for a wallet.
+    /// </summary>
+    /// <param name="args">Wallet to check.</param>
+    /// <param name="password">Wallet password.</param>
+    /// <returns>Wallet balances.</returns>
+    /// <exception cref="WalletNotFoundException">The request Wallet was not found.</exception>
+    /// <exception cref="IncorrectWalletPasswordException">Provided password is incorrect.</exception>
+    /// <exception cref="WalletDecryptionFailedException">Failed to decrypt wallet.</exception>
+    public string ShowBalances(string[] args, SecureString password)
+    {
+      var balances = string.Empty;
+      try
+      {
+        var walletFilePath = this.GetWalletFilePath(args);
+        CheckIfWalletExists(walletFilePath, true);
+
+        Safe safe = this.DecryptWallet(walletFilePath, password);
+
+        if (Configuration.DefaultConnectionType == ConnectionType.Http)
+        {
+          // 1. Query all operations grouped by address.
+          Dictionary<BitcoinAddress, List<BalanceOperation>> operationPerAddresses = QueryOperationsPerSafeAddresses(safe, 7);
+
+          // 2. Get all address history record with a wrapper class
+          List<AddressHistoryRecord> addressHistoryRecords = GetAllAddressHistoryRecords(operationPerAddresses);
+
+          // 3. Calculate wallet balances
+          GetBalances(addressHistoryRecords, out Money confirmedWalletBalance, out Money unconfirmedWalletBalance);
+
+          // 4. Group all address history records by addresses
+          Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>> addressHistoryRecordsPerAddress = GroupAllHistoryRecordsByAddresses(operationPerAddresses, addressHistoryRecords);
+
+          // 5. Calculate address balances
+          balances += CalculateAddressBalances(addressHistoryRecordsPerAddress);
+        }
+      }
+      catch (WalletNotFoundException)
+      {
+        // ToDo: Log
+        throw;
+      }
+
+      return balances;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="addressHistoryRecordsPerAddress"></param>
+    /// <returns></returns>
+    private static string CalculateAddressBalances(Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>> addressHistoryRecordsPerAddress)
+    {
+      string balances = string.Empty;
+
+      foreach (var elem in addressHistoryRecordsPerAddress)
+      {
+        GetBalances(elem.Value, out Money confirmedBalance, out Money unconfirmedBalance);
+
+        balances += $"Address Key - {elem.Key.ToString()}: ";
+
+        balances += $" Confirmed Balance: ";
+        if (confirmedBalance != Money.Zero)
+        {
+          balances += $"{confirmedBalance.ToDecimal(MoneyUnit.BTC).ToString("0.#############################")}. ";
+        }
+        else
+        {
+          balances += $"0. ";
+        }
+
+        balances += $" Unconfirmed Balance: ";
+        if (unconfirmedBalance != Money.Zero)
+        {
+          balances += $"{unconfirmedBalance.ToDecimal(MoneyUnit.BTC).ToString("0.#############################")}! ";
+        }
+        else
+        {
+          balances += $"0! ";
+        }
+      }
+
+      return balances;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="operationPerAddresses"></param>
+    /// <param name="addressHistoryRecords"></param>
+    /// <returns></returns>
+    private static Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>> GroupAllHistoryRecordsByAddresses(
+      Dictionary<BitcoinAddress, List<BalanceOperation>> operationPerAddresses, 
+      List<AddressHistoryRecord> addressHistoryRecords)
+    {
+      var addressHistoryRecordsPerAddress = new Dictionary<BitcoinAddress, HashSet<AddressHistoryRecord>>();
+      foreach (var address in operationPerAddresses.Keys)
+      {
+        var recs = new HashSet<AddressHistoryRecord>();
+        foreach (var record in addressHistoryRecords)
+        {
+          if (record.Address == address)
+          {
+            recs.Add(record);
+          }
+        }
+
+        addressHistoryRecordsPerAddress.Add(address, recs);
+      }
+
+      return addressHistoryRecordsPerAddress;
+    }
+
+    /// <summary>
+    /// Get the history records for addresses.
+    /// </summary>
+    /// <param name="operationPerAddresses">Dictionary containing BitcoinAddress and collection of Operations.</param>
+    /// <returns>A collection of AddressHistoryRecords.</returns>
+    private static List<AddressHistoryRecord> GetAllAddressHistoryRecords(Dictionary<BitcoinAddress, List<BalanceOperation>> operationPerAddresses)
+    {
+      var addressHistoryRecords = new List<AddressHistoryRecord>();
+
+      foreach (var elem in operationPerAddresses)
+      {
+        foreach (var op in elem.Value)
+        {
+          addressHistoryRecords.Add(new AddressHistoryRecord(elem.Key, op));
+        }
+      }
+
+      return addressHistoryRecords;
+    }
+
+    /// <summary>
+    /// Checks if a given wallet exists and throws an exception based on whether it should or not.
     /// </summary>
     /// <param name="walletFilePath">Path to wallet.</param>
+    /// <param name="ShouldWalletExist">Should the wallet exist.</param>
     /// <exception cref="WalletAlreadyExistsException">The requested wallet name already exists.</exception>
-    private static void CheckIfWalletExists(string walletFilePath)
+    /// <exception cref="WalletNotFoundException">The request Wallet was not found.</exception>
+    private static void CheckIfWalletExists(string walletFilePath, bool ShouldWalletExist = false)
     {
-      if (FileHelper.CheckFileExists(walletFilePath))
+      bool walletExists = FileHelper.CheckFileExists(walletFilePath);
+      if (walletExists && ShouldWalletExist == false)
       {
         throw new WalletAlreadyExistsException(
           "The request to generate a wallet failed because the wallet already exists.");
+      }
+
+      if (!walletExists && ShouldWalletExist == true)
+      {
+        throw new WalletNotFoundException($"Wallet not found: {walletFilePath}");
       }
     }
 
@@ -190,6 +334,7 @@ namespace SevnaBitcoinWallet.Wrapper
     /// </summary>
     /// <param name="args">The wallets file path.</param>
     /// <returns>The wallets full file path.</returns>
+    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is missing or missing a value.</exception>
     private string GetWalletFilePath(IEnumerable<string> args)
     {
       try
@@ -208,8 +353,39 @@ namespace SevnaBitcoinWallet.Wrapper
       catch (InvalidCommandArgumentFoundException)
       {
         // Log exception
-        throw new GenerateWalletFailedException("Could not generate wallet 'wallet-file' argument is invalid.");
+        throw;
       }
+    }
+
+    /// <summary>
+    /// Decrypts a wallet.
+    /// </summary>
+    /// <param name="walletFilePath">Path to wallet.</param>
+    /// <param name="password">Wallet Password.</param>
+    /// <returns>A Safe object.</returns>
+    /// <exception cref="IncorrectWalletPasswordException">Provided password is incorrect.</exception>
+    /// <exception cref="WalletDecryptionFailedException">Failed to decrypt wallet.</exception>
+    private Safe DecryptWallet(string walletFilePath, SecureString password)
+    {
+      Safe safe;
+
+      try
+      {
+        safe = Safe.Load(
+          new System.Net.NetworkCredential(string.Empty, password).Password, /* Note: From the Sevna boundary we want the password to be secure the library however takes a string so we must convert.*/
+          walletFilePath);
+      }
+      catch (SecurityException)
+      {
+        throw new IncorrectWalletPasswordException("Provided password is incorrect.");
+      }
+
+      if (safe == null)
+      {
+        throw new WalletDecryptionFailedException("Wallet could not be decrypted.");
+      }
+
+      return safe;
     }
   }
 }
