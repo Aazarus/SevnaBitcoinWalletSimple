@@ -52,7 +52,7 @@ namespace SevnaBitcoinWallet.Wrapper
     {
       try
       {
-        var walletFilePath = this.GetWalletFilePath(args);
+        var walletFilePath = GetWalletFilePath(args);
         CheckIfWalletExists(walletFilePath);
 
         Safe.Create(
@@ -83,9 +83,9 @@ namespace SevnaBitcoinWallet.Wrapper
     {
       try
       {
-        var walletFilePath = this.GetWalletFilePath(args);
+        var walletFilePath = GetWalletFilePath(args);
 
-        var userMnemonic = this.GetArgumentValue(args, "mnemonic");
+        var userMnemonic = GetArgumentValue(args, "mnemonic");
         CheckIfWalletExists(walletFilePath);
         ConfirmMnemonicIsValid(userMnemonic);
 
@@ -138,7 +138,7 @@ namespace SevnaBitcoinWallet.Wrapper
       var balances = string.Empty;
       try
       {
-        var walletFilePath = this.GetWalletFilePath(args);
+        var walletFilePath = GetWalletFilePath(args);
         CheckIfWalletExists(walletFilePath, true);
 
         Safe safe = this.DecryptWallet(walletFilePath, password);
@@ -316,7 +316,7 @@ namespace SevnaBitcoinWallet.Wrapper
     /// <returns>The argument value.</returns>
     /// <exception cref="InvalidCommandArgumentFoundException">Command argument is missing or missing a value.</exception>
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    private string GetArgumentValue(IEnumerable<string> args, string argumentOfInterest, bool required = true)
+    private static string GetArgumentValue(IEnumerable<string> args, string argumentOfInterest, bool required = true)
     {
       var arg = args.FirstOrDefault(x => x.StartsWith(argumentOfInterest));
       var argValue = arg?.Substring(arg.IndexOf("=", StringComparison.Ordinal) + 1);
@@ -334,27 +334,18 @@ namespace SevnaBitcoinWallet.Wrapper
     /// </summary>
     /// <param name="args">The wallets file path.</param>
     /// <returns>The wallets full file path.</returns>
-    /// <exception cref="InvalidCommandArgumentFoundException">Command argument is missing or missing a value.</exception>
-    private string GetWalletFilePath(IEnumerable<string> args)
+    private static string GetWalletFilePath(IEnumerable<string> args)
     {
-      try
-      {
-        var walletFileName = this.GetArgumentValue(args, "wallet-file");
+      var walletFileName = GetArgumentValue(args, "wallet-file");
 
-        if (string.IsNullOrEmpty(walletFileName))
-        {
-          return Configuration.DefaultWalletFileName;
-        }
-
-        const string walletDirectoryName = "Wallets";
-        Directory.CreateDirectory(walletDirectoryName);
-        return Path.Combine(walletDirectoryName, walletFileName);
-      }
-      catch (InvalidCommandArgumentFoundException)
+      if (string.IsNullOrEmpty(walletFileName))
       {
-        // Log exception
-        throw;
+        return Configuration.DefaultWalletFileName;
       }
+
+      const string walletDirectoryName = "Wallets";
+      Directory.CreateDirectory(walletDirectoryName);
+      return Path.Combine(walletDirectoryName, walletFileName);
     }
 
     /// <summary>
